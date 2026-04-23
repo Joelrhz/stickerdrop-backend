@@ -19,7 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use('/files', express.static(path.join(__dirname, 'tmp')));
 
 const TMP_DIR = path.join(__dirname, 'tmp');
@@ -34,7 +34,6 @@ setInterval(() => {
   } catch {}
 }, 600000);
 
-// Descarga un archivo desde una URL a un path local
 function downloadFile(url, dest) {
   return new Promise((resolve, reject) => {
     const proto = url.startsWith('https') ? https : http;
@@ -59,7 +58,6 @@ function downloadFile(url, dest) {
   });
 }
 
-// Obtiene el video de TikTok usando la API de tikwm.com
 async function getTikTokVideo(url) {
   return new Promise((resolve, reject) => {
     const postData = `url=${encodeURIComponent(url)}&hd=1`;
@@ -73,18 +71,14 @@ async function getTikTokVideo(url) {
         'User-Agent': 'Mozilla/5.0'
       }
     };
-
     const req = https.request(options, res => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          if (json.code === 0 && json.data?.play) {
-            resolve(json.data);
-          } else {
-            reject(new Error(json.msg || 'Could not get video'));
-          }
+          if (json.code === 0 && json.data?.play) resolve(json.data);
+          else reject(new Error(json.msg || 'Could not get video'));
         } catch(e) { reject(e); }
       });
     });
@@ -102,26 +96,14 @@ app.post('/download', async (req, res) => {
 
   const fileId = uuidv4();
   const outputPath = path.join(TMP_DIR, `${fileId}.mp4`);
-
   try {
     const data = await getTikTokVideo(url);
     const videoUrl = data.hdplay || data.play;
     await downloadFile(videoUrl, outputPath);
-
-    if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size < 1000) {
-      throw new Error('Download failed');
-    }
-
-    let duration = data.duration || 10;
-
+    if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size < 1000) throw new Error('Download failed');
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host;
-    res.json({
-      success: true,
-      fileId,
-      videoUrl: `${proto}://${host}/files/${fileId}.mp4`,
-      duration: parseFloat(duration)
-    });
+    res.json({ success: true, fileId, videoUrl: `${proto}://${host}/files/${fileId}.mp4`, duration: parseFloat(data.duration || 10) });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
     console.error('Download error:', err.message);
@@ -159,13 +141,10 @@ app.post('/process', async (req, res) => {
       await encode(inputPath, opt, 10, 55);
       fs.unlinkSync(outputPath); fs.renameSync(opt, outputPath);
     }
-    const proto = req.headers['x-forwarded-proto'] || 'https';
-    const host = req.headers['x-forwarded-host'] || req.headers.host;
-    res.json({
-      success: true,
-      stickerUrl: `${proto}://${host}/files/${outputId}.webp`,
-      sizeKB: Math.round(fs.statSync(outputPath).size / 1024)
-    });
+    const sizeKB = Math.round(fs.statSync(outputPath).size / 1024);
+    // Devolver base64 directamente para descarga sin problemas de CORS
+    const base64 = fs.readFileSync(outputPath).toString('base64');
+    res.json({ success: true, base64, sizeKB });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
     res.status(500).json({ error: 'Processing failed. Please try again.' });
