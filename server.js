@@ -24,6 +24,7 @@ app.use('/files', express.static(path.join(__dirname, 'tmp')));
 
 const TMP_DIR = path.join(__dirname, 'tmp');
 if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
+const upload = multer({ dest: TMP_DIR });
 
 setInterval(() => {
   try {
@@ -51,10 +52,7 @@ function downloadFile(url, dest) {
       }
       res.pipe(file);
       file.on('finish', () => file.close(resolve));
-    }).on('error', err => {
-      fs.unlink(dest, () => {});
-      reject(err);
-    });
+    }).on('error', err => { fs.unlink(dest, () => {}); reject(err); });
   });
 }
 
@@ -62,14 +60,8 @@ async function getTikTokVideo(url) {
   return new Promise((resolve, reject) => {
     const postData = `url=${encodeURIComponent(url)}&hd=1`;
     const options = {
-      hostname: 'www.tikwm.com',
-      path: '/api/',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': Buffer.byteLength(postData),
-        'User-Agent': 'Mozilla/5.0'
-      }
+      hostname: 'www.tikwm.com', path: '/api/', method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData), 'User-Agent': 'Mozilla/5.0' }
     };
     const req = https.request(options, res => {
       let data = '';
@@ -142,11 +134,11 @@ app.post('/process', async (req, res) => {
       fs.unlinkSync(outputPath); fs.renameSync(opt, outputPath);
     }
     const sizeKB = Math.round(fs.statSync(outputPath).size / 1024);
-    // Devolver base64 directamente para descarga sin problemas de CORS
     const base64 = fs.readFileSync(outputPath).toString('base64');
     res.json({ success: true, base64, sizeKB });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
+    console.error('Process error:', err.message);
     res.status(500).json({ error: 'Processing failed. Please try again.' });
   }
 });
