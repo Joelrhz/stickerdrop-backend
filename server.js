@@ -8,6 +8,19 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Instalar yt-dlp al arrancar si no existe
+const YTDLP_PATH = path.join(__dirname, 'yt-dlp');
+if (!fs.existsSync(YTDLP_PATH)) {
+  try {
+    console.log('Installing yt-dlp...');
+    execSync(`curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ${YTDLP_PATH}`, { stdio: 'inherit' });
+    execSync(`chmod a+rx ${YTDLP_PATH}`);
+    console.log('yt-dlp installed!');
+  } catch(e) {
+    console.error('Failed to install yt-dlp:', e.message);
+  }
+}
+
 try {
   const sys = execSync('which ffmpeg').toString().trim();
   ffmpeg.setFfmpegPath(sys || ffmpegStatic);
@@ -33,10 +46,9 @@ setInterval(() => {
   } catch {}
 }, 600000);
 
-// Busca yt-dlp en el sistema o en la carpeta local
 function getYtDlp() {
+  if (fs.existsSync(YTDLP_PATH)) return YTDLP_PATH;
   try { execSync('yt-dlp --version', { stdio: 'pipe' }); return 'yt-dlp'; } catch {}
-  try { execSync('./yt-dlp --version', { stdio: 'pipe' }); return './yt-dlp'; } catch {}
   return null;
 }
 
@@ -45,7 +57,7 @@ app.get('/', (req, res) => res.json({ status: 'ok', ytdlp: !!getYtDlp(), path: g
 app.post('/download', async (req, res) => {
   const { url } = req.body;
   if (!url || !/tiktok\.com/i.test(url)) return res.status(400).json({ error: 'Invalid TikTok URL' });
-  
+
   const ytdlp = getYtDlp();
   if (!ytdlp) return res.status(500).json({ error: 'yt-dlp not available' });
 
