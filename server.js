@@ -133,9 +133,10 @@ app.post('/process', async (req, res) => {
       await encode(inputPath, opt, 10, 55);
       fs.unlinkSync(outputPath); fs.renameSync(opt, outputPath);
     }
-    const sizeKB = Math.round(fs.statSync(outputPath).size / 1024);
-    const base64 = fs.readFileSync(outputPath).toString('base64');
-    res.json({ success: true, base64, sizeKB });
+    res.setHeader('Content-Type', 'image/webp');
+    res.setHeader('Content-Disposition', 'attachment; filename="sticker.webp"');
+    res.setHeader('X-Sticker-Size', Math.round(fs.statSync(outputPath).size / 1024));
+    res.sendFile(outputPath);
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
     console.error('Process error:', err.message);
