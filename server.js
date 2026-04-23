@@ -33,21 +33,26 @@ setInterval(() => {
   } catch {}
 }, 600000);
 
-function checkYtDlp() {
-  try { execSync('yt-dlp --version', { stdio: 'pipe' }); return true; } catch { return false; }
+// Busca yt-dlp en el sistema o en la carpeta local
+function getYtDlp() {
+  try { execSync('yt-dlp --version', { stdio: 'pipe' }); return 'yt-dlp'; } catch {}
+  try { execSync('./yt-dlp --version', { stdio: 'pipe' }); return './yt-dlp'; } catch {}
+  return null;
 }
 
-app.get('/', (req, res) => res.json({ status: 'ok', ytdlp: checkYtDlp() }));
+app.get('/', (req, res) => res.json({ status: 'ok', ytdlp: !!getYtDlp(), path: getYtDlp() }));
 
 app.post('/download', async (req, res) => {
   const { url } = req.body;
   if (!url || !/tiktok\.com/i.test(url)) return res.status(400).json({ error: 'Invalid TikTok URL' });
-  if (!checkYtDlp()) return res.status(500).json({ error: 'yt-dlp not available' });
+  
+  const ytdlp = getYtDlp();
+  if (!ytdlp) return res.status(500).json({ error: 'yt-dlp not available' });
 
   const fileId = uuidv4();
   const outputPath = path.join(TMP_DIR, `${fileId}.mp4`);
   try {
-    execSync(`yt-dlp -f "best[height<=720][ext=mp4]/best[height<=720]" --merge-output-format mp4 -o "${outputPath}" "${url}"`, { stdio: 'pipe', timeout: 90000 });
+    execSync(`${ytdlp} -f "best[height<=720][ext=mp4]/best[height<=720]" --merge-output-format mp4 -o "${outputPath}" "${url}"`, { stdio: 'pipe', timeout: 90000 });
     if (!fs.existsSync(outputPath)) throw new Error('Download failed');
 
     let duration = 10;
@@ -101,4 +106,4 @@ app.post('/process', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`\n🚀 StickerDrop backend on port ${PORT} | yt-dlp: ${checkYtDlp()}`));
+app.listen(PORT, () => console.log(`\n🚀 StickerDrop on port ${PORT} | yt-dlp: ${getYtDlp()}`));
