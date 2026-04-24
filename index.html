@@ -2,526 +2,639 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>StickerDrop — TikTok to WhatsApp</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#070709;--surface:#0f0f13;--surface2:#16161c;--surface3:#1e1e26;
-  --border:rgba(255,255,255,0.07);--green:#22c55e;--green-dim:rgba(34,197,94,0.1);
-  --pink:#ff2d6b;--text:#ededf0;--text-muted:#5a5a6e;--text-dim:#8f8fa8;
+  --border:rgba(255,255,255,0.08);--green:#22c55e;--text:#ededf0;
+  --text-muted:#5a5a6e;--text-dim:#8f8fa8;
 }
-html,body{height:100%;font-size:16px;-webkit-font-smoothing:antialiased}
+html,body{height:100%;-webkit-font-smoothing:antialiased;touch-action:manipulation}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.01) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.01) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 
-/* ── STEP 0 & 2: centered layout ── */
+/* ── PAGES ── */
 .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 80px;position:relative;z-index:1}
-body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 
 /* Header */
-.header{text-align:center;margin-bottom:36px}
 .logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
 .logo-icon{width:38px;height:38px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px}
 .logo-text span{color:#22c55e}
-.tagline{color:var(--text-muted);font-size:13px;font-weight:300}
+.tagline{color:var(--text-muted);font-size:13px;margin-bottom:32px;text-align:center}
 
 /* Steps */
-.steps-row{display:flex;align-items:center;justify-content:center;margin-bottom:28px}
-.step-dot{display:flex;flex-direction:column;align-items:center;gap:5px}
-.step-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;transition:all 0.3s;border:2px solid rgba(255,255,255,0.08);background:var(--surface2);color:var(--text-muted)}
-.step-circle.active{background:rgba(34,197,94,0.1);border-color:#22c55e;color:#22c55e}
-.step-circle.done{background:#22c55e;border-color:#22c55e;color:#fff}
-.step-label{font-size:9px;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);transition:color 0.3s}
-.step-dot.active .step-label{color:#22c55e}
-.step-line{width:44px;height:1px;background:rgba(255,255,255,0.07);margin:0 6px 18px;transition:background 0.4s}
-.step-line.done{background:#22c55e}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+.sdot{display:flex;flex-direction:column;align-items:center;gap:5px}
+.sci{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;transition:all 0.3s;border:2px solid rgba(255,255,255,0.08);background:var(--surface2);color:var(--text-muted)}
+.sci.a{background:rgba(34,197,94,0.1);border-color:#22c55e;color:#22c55e}
+.sci.d{background:#22c55e;border-color:#22c55e;color:#fff}
+.slb{font-size:9px;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)}
+.sdot.a .slb{color:#22c55e}
+.sln{width:44px;height:1px;background:rgba(255,255,255,0.07);margin:0 6px 18px;transition:background 0.4s}
+.sln.d{background:#22c55e}
 
 /* Card */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:500px;position:relative;overflow:hidden}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:500px;position:relative}
 .card::before{content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,0.4),transparent)}
 
-/* Label */
-.label{display:block;font-family:'Syne',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.lbl{display:block;font-family:'Syne',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
 
 /* Input */
-.input-row{display:flex;gap:8px}
-input[type="url"]{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s}
-input[type="url"]:focus{border-color:rgba(34,197,94,0.4)}
-input[type="url"]::placeholder{color:var(--text-muted)}
+.irow{display:flex;gap:8px}
+input[type=url]{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s}
+input[type=url]:focus{border-color:rgba(34,197,94,0.4)}
+input[type=url]::placeholder{color:var(--text-muted)}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border-radius:10px;transition:all 0.15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border-radius:10px;transition:all 0.15s;-webkit-tap-highlight-color:transparent}
 .btn:active{transform:scale(0.97)}
-.btn-tiktok{padding:13px 18px;background:linear-gradient(135deg,#ff2d6b,#ff6b2d);color:#fff;box-shadow:0 4px 16px rgba(255,45,107,0.3)}
-.btn-tiktok:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-red{padding:13px 18px;background:linear-gradient(135deg,#ff2d6b,#ff6b2d);color:#fff;box-shadow:0 4px 16px rgba(255,45,107,0.3)}
+.btn-red:disabled{opacity:0.4;cursor:not-allowed;transform:none}
 .btn-green{padding:14px;width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:15px;box-shadow:0 4px 16px rgba(34,197,94,0.3);border-radius:12px}
 .btn-green:disabled{opacity:0.4;cursor:not-allowed;transform:none}
 .btn-ghost{padding:12px 16px;background:var(--surface2);color:var(--text-dim);border:1px solid var(--border);border-radius:10px}
-.btn-download{padding:14px;width:100%;background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;font-size:15px;text-decoration:none;display:flex;border-radius:12px;box-shadow:0 4px 20px rgba(34,197,94,0.25)}
+.btn-dl{padding:14px;width:100%;background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;font-size:15px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;box-shadow:0 4px 20px rgba(34,197,94,0.25)}
 
-/* Error */
-.error-box{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
-.info-box{background:var(--surface2);border-radius:10px;padding:12px 14px;margin-top:14px}
-.info-box p{font-size:12px;color:var(--text-muted);line-height:1.6}
+.err{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
+.infobox{background:var(--surface2);border-radius:10px;padding:12px 14px;margin-top:14px}
+.infobox p{font-size:12px;color:var(--text-muted);line-height:1.6}
+.div{height:1px;background:var(--border);margin:18px 0}
 
-/* ── STEP 1: CapCut-style full screen editor ── */
-#panel-1{
-  position:fixed;inset:0;z-index:50;
-  background:var(--bg);
-  display:none;
-  flex-direction:column;
-}
+/* ── EDITOR ── */
+#panel-1{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column}
 
-/* Top: video preview with crop overlay */
-.editor-top{
-  flex:1;
-  position:relative;
-  overflow:hidden;
-  background:#000;
-  display:flex;align-items:center;justify-content:center;
-}
+/* Video preview area */
+.ed-video{flex:0 0 auto;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+#pvideo{max-width:100%;max-height:100%;object-fit:contain;display:block}
 
-#editor-video{
-  position:absolute;
-  /* will be sized by JS */
-}
+/* Editor controls scroll area */
+.ed-controls{flex:1;overflow-y:auto;padding:16px 16px 24px;background:var(--surface);display:flex;flex-direction:column;gap:14px}
 
-/* Crop box overlay */
-#crop-box{
-  position:absolute;
-  border:2px solid #fff;
-  box-shadow:0 0 0 9999px rgba(0,0,0,0.55);
-  cursor:move;
-  touch-action:none;
-}
-/* grid inside crop box */
-#crop-box::before,#crop-box::after{
-  content:'';position:absolute;inset:0;
-  pointer-events:none;
-}
-#crop-box::before{
-  background:
-    linear-gradient(rgba(255,255,255,0.15) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.15) 1px,transparent 1px);
-  background-size:33.33% 33.33%;
-}
+/* ── TIMELINE ── */
+.timeline-section{background:var(--surface2);border-radius:12px;padding:14px}
+.tl-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.tl-header span{font-family:'Syne',sans-serif;font-weight:600;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
+.tl-times{display:flex;gap:8px;align-items:center}
+.tl-time{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#22c55e;background:rgba(34,197,94,0.1);padding:3px 9px;border-radius:7px}
+.tl-sep{color:var(--text-muted);font-size:12px}
 
-/* Corner handles */
-.crop-handle{
-  position:absolute;width:18px;height:18px;
-  background:#fff;border-radius:2px;
-}
-.crop-handle.tl{top:-2px;left:-2px;cursor:nw-resize}
-.crop-handle.tr{top:-2px;right:-2px;cursor:ne-resize}
-.crop-handle.bl{bottom:-2px;left:-2px;cursor:sw-resize}
-.crop-handle.br{bottom:-2px;right:-2px;cursor:se-resize}
+/* Filmstrip */
+.filmstrip-wrap{position:relative;height:56px;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;touch-action:none}
+#filmstrip{position:absolute;inset:0;display:flex}
+.film-frame{flex-shrink:0;height:100%;object-fit:cover}
 
-/* Bottom controls */
-.editor-bottom{
-  background:var(--surface);
-  padding:16px 16px 24px;
-  flex-shrink:0;
-}
-
-.editor-controls{
-  display:flex;flex-direction:column;gap:14px;
-}
-
-/* Timeline / duration slider */
-.timeline-wrap{
-  background:var(--surface2);
-  border-radius:10px;
-  padding:12px 14px;
-}
-.timeline-label{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:10px;
-}
-.timeline-label span{font-size:12px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600}
-.timeline-label .tl-val{color:#22c55e;font-size:13px}
-
-/* Custom range for start time */
-input[type="range"]{-webkit-appearance:none;width:100%;height:4px;background:var(--surface3);border-radius:2px;outline:none;cursor:pointer}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,0.5);cursor:pointer}
+/* Selection overlay */
+.tl-overlay{position:absolute;inset:0;pointer-events:none}
+.tl-mask-l,.tl-mask-r{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.6)}
+.tl-selection{position:absolute;top:0;bottom:0;border:2px solid #22c55e;border-radius:2px}
+.tl-handle{position:absolute;top:0;bottom:0;width:14px;background:#22c55e;cursor:ew-resize;display:flex;align-items:center;justify-content:center;pointer-events:all}
+.tl-handle::after{content:'⋮';color:#000;font-size:14px;font-weight:900}
+.tl-handle.left{left:0;border-radius:3px 0 0 3px}
+.tl-handle.right{right:0;border-radius:0 3px 3px 0}
+.tl-playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;pointer-events:none}
 
 /* Duration pills */
 .dur-row{display:flex;gap:8px}
-.dur-pill{flex:1;padding:9px 4px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;text-align:center}
+.dur-pill{flex:1;padding:9px 4px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;text-align:center;-webkit-tap-highlight-color:transparent}
 .dur-pill.active{border-color:#22c55e;background:rgba(34,197,94,0.1);color:#22c55e}
 
-/* Action buttons row */
+/* ── CROP ── */
+.crop-section{background:var(--surface2);border-radius:12px;padding:14px}
+.crop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.crop-header span{font-family:'Syne',sans-serif;font-weight:600;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
+.crop-hint{font-size:11px;color:var(--text-muted)}
+
+.crop-canvas-wrap{position:relative;width:100%;border-radius:8px;overflow:hidden;background:#000;touch-action:none}
+#crop-canvas{display:block;width:100%;height:auto}
+
+/* Crop overlay */
+.crop-overlay{position:absolute;inset:0;pointer-events:none}
+.crop-shade{position:absolute;background:rgba(0,0,0,0.6)}
+.crop-box-border{position:absolute;border:2px solid #fff;pointer-events:all;touch-action:none}
+/* grid */
+.crop-box-border::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,0.12) 1px,transparent 1px) 0 0/33.33% 33.33%,linear-gradient(90deg,rgba(255,255,255,0.12) 1px,transparent 1px) 0 0/33.33% 33.33%;pointer-events:none}
+.crop-corner{position:absolute;width:22px;height:22px;background:#fff;pointer-events:all;touch-action:none}
+.crop-corner.tl{top:-2px;left:-2px;border-radius:3px 0 0 0;cursor:nw-resize}
+.crop-corner.tr{top:-2px;right:-2px;border-radius:0 3px 0 0;cursor:ne-resize}
+.crop-corner.bl{bottom:-2px;left:-2px;border-radius:0 0 0 3px;cursor:sw-resize}
+.crop-corner.br{bottom:-2px;right:-2px;border-radius:0 0 3px 0;cursor:se-resize}
+
 .action-row{display:flex;gap:10px}
 
-/* Spinner */
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:5px}
-
-/* Loading */
-#loading-overlay{position:fixed;inset:0;background:rgba(7,7,9,0.9);backdrop-filter:blur(8px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-#loading-overlay.show{display:flex}
-.loader-ring{width:48px;height:48px;border:3px solid rgba(34,197,94,0.15);border-top-color:#22c55e;border-radius:50%;animation:spin 0.8s linear infinite}
-.loader-text{font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:var(--text-dim)}
-
-/* Result */
+/* ── RESULT ── */
 .sticker-wrap{display:flex;justify-content:center;margin-bottom:18px}
 .sticker-frame{position:relative;border-radius:14px;overflow:hidden;border:2px solid rgba(34,197,94,0.3);box-shadow:0 0 36px rgba(34,197,94,0.1)}
-#result-sticker{display:block;width:180px;height:180px;object-fit:cover}
-.sticker-size-badge{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,0.75);border-radius:5px;padding:2px 7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#22c55e}
-.divider{height:1px;background:var(--border);margin:18px 0}
-.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:14px}
-.instructions{background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:16px;margin-bottom:16px}
-.inst-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
-.inst-step:last-child{margin-bottom:0}
-.inst-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(34,197,94,0.15);color:#22c55e;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px}
-.inst-text{color:#b0b0c4;font-size:13px;line-height:1.5}
-.inst-text strong{color:var(--text);font-weight:500}
+#result-sticker{display:block;width:200px;height:200px;object-fit:cover}
+.sticker-size{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,0.75);border-radius:5px;padding:2px 7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#22c55e}
+.inst{background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:16px;margin-bottom:16px}
+.ist{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.ist:last-child{margin-bottom:0}
+.isn{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(34,197,94,0.15);color:#22c55e;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px}
+.ist p{color:#b0b0c4;font-size:13px;line-height:1.5}
+.ist p strong{color:var(--text);font-weight:500}
+
+/* Spinner */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:5px}
+
+/* Loading */
+#lov{position:fixed;inset:0;background:rgba(7,7,9,0.9);backdrop-filter:blur(8px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#lov.show{display:flex}
+.lring{width:48px;height:48px;border:3px solid rgba(34,197,94,0.15);border-top-color:#22c55e;border-radius:50%;animation:spin 0.8s linear infinite}
+.ltxt{font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:var(--text-dim)}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both}
+
+.stitle{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px}
 </style>
 </head>
 <body>
 
-<div id="loading-overlay">
-  <div class="loader-ring"></div>
-  <p class="loader-text" id="loading-text">Procesando...</p>
-</div>
+<div id="lov"><div class="lring"></div><p class="ltxt" id="ltxt">Procesando...</p></div>
 
-<!-- ══ STEP 0 ══ -->
-<div class="page" id="panel-0">
-  <header class="header fade">
-    <div class="logo-row">
-      <div class="logo-icon">🎯</div>
-      <span class="logo-text">Sticker<span>Drop</span></span>
-    </div>
-    <p class="tagline">TikTok stickers → WhatsApp · Zero hassle</p>
-  </header>
-
-  <div class="steps-row fade">
-    <div class="step-dot active" id="s0-d0"><div class="step-circle active" id="s0-c0">1</div><span class="step-label">Link</span></div>
-    <div class="step-line" id="s0-l0"></div>
-    <div class="step-dot" id="s0-d1"><div class="step-circle" id="s0-c1">2</div><span class="step-label">Ajustar</span></div>
-    <div class="step-line" id="s0-l1"></div>
-    <div class="step-dot" id="s0-d2"><div class="step-circle" id="s0-c2">3</div><span class="step-label">Descargar</span></div>
+<!-- STEP 0 -->
+<div class="page" id="p0">
+  <div class="logo-row fade"><div class="logo-icon">🎯</div><span class="logo-text">Sticker<span>Drop</span></span></div>
+  <p class="tagline fade">TikTok stickers → WhatsApp · Zero hassle</p>
+  <div class="steps fade">
+    <div class="sdot a" id="d0"><div class="sci a" id="c0">1</div><span class="slb">Link</span></div>
+    <div class="sln" id="l0"></div>
+    <div class="sdot" id="d1"><div class="sci" id="c1">2</div><span class="slb">Editar</span></div>
+    <div class="sln" id="l1"></div>
+    <div class="sdot" id="d2"><div class="sci" id="c2">3</div><span class="slb">Descargar</span></div>
   </div>
-
   <div class="card fade">
-    <label class="label">TikTok Video URL</label>
-    <div class="input-row">
-      <input type="url" id="tiktok-url" placeholder="https://vt.tiktok.com/..." autocomplete="off" spellcheck="false"/>
-      <button class="btn btn-tiktok" onclick="handleDownload()">🎵 Go</button>
+    <label class="lbl">TikTok Video URL</label>
+    <div class="irow">
+      <input type="url" id="turl" placeholder="https://vt.tiktok.com/..." autocomplete="off" spellcheck="false"/>
+      <button class="btn btn-red" onclick="doDownload()">🎵 Go</button>
     </div>
-    <div class="error-box" id="error-0"></div>
-    <div class="info-box"><p>✓ Links cortos y largos de TikTok &nbsp;·&nbsp; ✓ Sin cuenta &nbsp;·&nbsp; ✓ Gratis</p></div>
+    <div class="err" id="e0"></div>
+    <div class="infobox"><p>✓ Links cortos y largos · ✓ Sin cuenta · ✓ Gratis</p></div>
   </div>
 </div>
 
-<!-- ══ STEP 1: CapCut Editor ══ -->
+<!-- STEP 1: Editor -->
 <div id="panel-1">
-  <!-- Video + crop overlay -->
-  <div class="editor-top" id="editor-top">
-    <video id="editor-video" muted loop playsinline crossorigin="anonymous"></video>
-    <div id="crop-box">
-      <div class="crop-handle tl" data-corner="tl"></div>
-      <div class="crop-handle tr" data-corner="tr"></div>
-      <div class="crop-handle bl" data-corner="bl"></div>
-      <div class="crop-handle br" data-corner="br"></div>
-    </div>
+  <!-- Video preview -->
+  <div class="ed-video" id="ed-top">
+    <video id="pvideo" muted playsinline crossorigin="anonymous" loop></video>
   </div>
 
   <!-- Controls -->
-  <div class="editor-bottom">
-    <div class="editor-controls">
+  <div class="ed-controls">
 
-      <!-- Start time -->
-      <div class="timeline-wrap">
-        <div class="timeline-label">
-          <span>Inicio del clip</span>
-          <span class="tl-val" id="start-val">0.0s</span>
-        </div>
-        <input type="range" id="start-slider" min="0" max="30" step="0.1" value="0" oninput="updateStart()"/>
-        <div style="display:flex;justify-content:space-between;margin-top:4px">
-          <span style="font-size:11px;color:var(--text-muted)">0s</span>
-          <span style="font-size:11px;color:var(--text-muted)" id="max-label">30s</span>
+    <!-- Timeline -->
+    <div class="timeline-section">
+      <div class="tl-header">
+        <span>Clip</span>
+        <div class="tl-times">
+          <span class="tl-time" id="t-start">0.0s</span>
+          <span class="tl-sep">→</span>
+          <span class="tl-time" id="t-end">2.0s</span>
         </div>
       </div>
-
-      <!-- Duration -->
-      <div>
-        <div class="label" style="margin-bottom:8px">Duración del sticker</div>
-        <div class="dur-row">
-          <button class="dur-pill" onclick="setDur(1)">1s</button>
-          <button class="dur-pill active" onclick="setDur(2)">2s</button>
-          <button class="dur-pill" onclick="setDur(3)">3s</button>
-          <button class="dur-pill" onclick="setDur(4)">4s</button>
+      <div class="filmstrip-wrap" id="fw">
+        <div id="filmstrip"></div>
+        <div class="tl-overlay" id="tl-overlay">
+          <div class="tl-mask-l" id="mask-l"></div>
+          <div class="tl-mask-r" id="mask-r"></div>
+          <div class="tl-selection" id="tl-sel">
+            <div class="tl-handle left" id="h-left"></div>
+            <div class="tl-handle right" id="h-right"></div>
+          </div>
+          <div class="tl-playhead" id="playhead"></div>
         </div>
       </div>
-
-      <div class="error-box" id="error-1"></div>
-
-      <!-- Action buttons -->
-      <div class="action-row">
-        <button class="btn btn-ghost" onclick="goBack()">← Atrás</button>
-        <button class="btn btn-green" onclick="handleProcess()" style="flex:1">✨ Generar Sticker</button>
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <span style="font-size:11px;color:var(--text-muted)">0s</span>
+        <span style="font-size:11px;color:var(--text-muted)" id="dur-label">0s</span>
       </div>
+    </div>
+
+    <!-- Duration -->
+    <div>
+      <div class="stitle">Duración del sticker</div>
+      <div class="dur-row">
+        <button class="dur-pill" onclick="setDur(1)">1s</button>
+        <button class="dur-pill active" onclick="setDur(2)">2s</button>
+        <button class="dur-pill" onclick="setDur(3)">3s</button>
+        <button class="dur-pill" onclick="setDur(4)">4s</button>
+      </div>
+    </div>
+
+    <!-- Crop -->
+    <div class="crop-section">
+      <div class="crop-header">
+        <span>Recortar</span>
+        <span class="crop-hint">Arrastra las esquinas</span>
+      </div>
+      <div class="crop-canvas-wrap" id="crop-wrap">
+        <canvas id="crop-canvas"></canvas>
+        <div class="crop-overlay" id="crop-overlay">
+          <!-- shades and box inserted by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="err" id="e1"></div>
+
+    <div class="action-row">
+      <button class="btn btn-ghost" onclick="goBack()">← Atrás</button>
+      <button class="btn btn-green" onclick="doProcess()" style="flex:1">✨ Generar Sticker</button>
     </div>
   </div>
 </div>
 
-<!-- ══ STEP 2 ══ -->
-<div class="page" id="panel-2" style="display:none">
-  <header class="header">
-    <div class="logo-row">
-      <div class="logo-icon">🎯</div>
-      <span class="logo-text">Sticker<span>Drop</span></span>
-    </div>
-  </header>
-
-  <div class="steps-row">
-    <div class="step-dot"><div class="step-circle done">✓</div><span class="step-label">Link</span></div>
-    <div class="step-line done"></div>
-    <div class="step-dot"><div class="step-circle done">✓</div><span class="step-label">Ajustar</span></div>
-    <div class="step-line done"></div>
-    <div class="step-dot active"><div class="step-circle active">3</div><span class="step-label" style="color:#22c55e">Descargar</span></div>
+<!-- STEP 2 -->
+<div class="page" id="p2" style="display:none">
+  <div class="logo-row"><div class="logo-icon">🎯</div><span class="logo-text">Sticker<span>Drop</span></span></div>
+  <p class="tagline">¡Tu sticker está listo!</p>
+  <div class="steps" style="margin-bottom:24px">
+    <div class="sdot"><div class="sci d">✓</div><span class="slb">Link</span></div>
+    <div class="sln d"></div>
+    <div class="sdot"><div class="sci d">✓</div><span class="slb">Editar</span></div>
+    <div class="sln d"></div>
+    <div class="sdot a"><div class="sci a">3</div><span class="slb" style="color:#22c55e">Descargar</span></div>
   </div>
-
   <div class="card" style="max-width:500px;width:100%;text-align:center">
-    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px">🎉 ¡Tu sticker está listo!</div>
     <div class="sticker-wrap">
       <div class="sticker-frame">
-        <img id="result-sticker" src="" alt="Sticker" style="display:block;width:180px;height:180px;object-fit:cover"/>
-        <span class="sticker-size-badge" id="size-badge"></span>
+        <img id="result-sticker" src="" alt="Sticker"/>
+        <span class="sticker-size" id="sbadge"></span>
       </div>
     </div>
-    <a id="download-link" href="#" download="sticker.webp" class="btn btn-download" style="margin-bottom:18px">⬇️ Descargar Sticker (.webp)</a>
-    <div class="divider"></div>
-    <div class="section-title" style="text-align:left">📱 Cómo usarlo en WhatsApp</div>
-    <div class="instructions">
-      <div class="inst-step"><div class="inst-num">1</div><p class="inst-text">Descarga el archivo <strong>.webp</strong> arriba</p></div>
-      <div class="inst-step"><div class="inst-num">2</div><p class="inst-text">Abre <strong>Sticker Maker</strong> (gratis en iOS y Android)</p></div>
-      <div class="inst-step"><div class="inst-num">3</div><p class="inst-text">Crea pack → <strong>Importa</strong> el archivo</p></div>
-      <div class="inst-step"><div class="inst-num">4</div><p class="inst-text">Agrega a WhatsApp y <strong>¡listo!</strong> 🎊</p></div>
+    <button class="btn-dl" id="dl-btn" onclick="doManualDownload()">⬇️ Descargar Sticker (.webp)</button>
+    <div class="div"></div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;text-align:left">📱 Cómo usarlo en WhatsApp</div>
+    <div class="inst">
+      <div class="ist"><div class="isn">1</div><p>Descarga el archivo <strong>.webp</strong> arriba</p></div>
+      <div class="ist"><div class="isn">2</div><p>Abre <strong>Sticker Maker</strong> (gratis iOS y Android)</p></div>
+      <div class="ist"><div class="isn">3</div><p>Crea pack → <strong>Importa</strong> el archivo</p></div>
+      <div class="ist"><div class="isn">4</div><p>Agrega a WhatsApp y <strong>¡listo!</strong> 🎊</p></div>
     </div>
-    <button class="btn btn-ghost" style="width:100%" onclick="handleReset()">← Crear otro sticker</button>
+    <button class="btn btn-ghost" style="width:100%" onclick="doReset()">← Crear otro sticker</button>
   </div>
 </div>
 
 <script>
 const API = '';
-let state = { fileId:null, videoUrl:null, duration:30, startTime:0, stickerDuration:2 };
+let st = { fileId:null, dur:30, startTime:0, stickerDur:2, blobUrl:null, sizeKB:0 };
 
-// ── Loading ───────────────────────────────────────────────────────────────────
-function showLoading(t='Procesando...'){document.getElementById('loading-text').textContent=t;document.getElementById('loading-overlay').classList.add('show')}
-function hideLoading(){document.getElementById('loading-overlay').classList.remove('show')}
-function showError(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block'}
-function clearError(id){document.getElementById(id).style.display='none'}
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function showLoad(t){document.getElementById('ltxt').textContent=t;document.getElementById('lov').classList.add('show')}
+function hideLoad(){document.getElementById('lov').classList.remove('show')}
+function showErr(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block'}
+function hideErr(id){document.getElementById(id).style.display='none'}
 
-// ── Download ──────────────────────────────────────────────────────────────────
-async function handleDownload(){
-  const url=document.getElementById('tiktok-url').value.trim();
-  if(!url||!/tiktok\.com/i.test(url)){showError('error-0','⚠️ Pega un link válido de TikTok');return}
-  clearError('error-0');
-  showLoading('Descargando video de TikTok...');
+// ── DOWNLOAD ──────────────────────────────────────────────────────────────────
+document.getElementById('turl').addEventListener('keydown',e=>{if(e.key==='Enter')doDownload()});
+
+async function doDownload(){
+  const url=document.getElementById('turl').value.trim();
+  if(!url||!/tiktok\.com/i.test(url)){showErr('e0','⚠️ Pega un link válido de TikTok');return}
+  hideErr('e0');
+  showLoad('Descargando video de TikTok...');
   try{
-    const res=await fetch(`${API}/download`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})}).catch(()=>{throw new Error('Sin conexión al servidor')});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Error al descargar');
-    state.fileId=data.fileId;
-    state.duration=data.duration||30;
-    const slider=document.getElementById('start-slider');
-    slider.max=Math.max(0,state.duration-1).toFixed(1);
-    slider.value=0;
-    document.getElementById('max-label').textContent=state.duration.toFixed(1)+'s';
-    // Video URL is served from backend /files/
-    const videoUrl=`${API}/files/${data.fileId}.mp4`;
-    showEditor(videoUrl);
-  }catch(err){showError('error-0',err.message)}
-  finally{hideLoading()}
+    const r=await fetch(`${API}/download`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Error');
+    st.fileId=d.fileId;
+    st.dur=d.duration||10;
+    st.startTime=0;
+    showEditor(`${API}/files/${d.fileId}.mp4`);
+  }catch(e){showErr('e0',e.message)}
+  finally{hideLoad()}
 }
-document.getElementById('tiktok-url').addEventListener('keydown',e=>{if(e.key==='Enter')handleDownload()});
 
-// ── Editor (Step 1) ───────────────────────────────────────────────────────────
-let cropBox={x:0,y:0,size:0}; // in screen px relative to editor-top
-let dragging=null; // 'move' | corner string
-let dragStart={mx:0,my:0,bx:0,by:0,bsize:0};
+// ── EDITOR ────────────────────────────────────────────────────────────────────
+let video, rafId;
 
 function showEditor(videoUrl){
-  document.getElementById('panel-0').style.display='none';
-  const p1=document.getElementById('panel-1');
-  p1.style.display='flex';
-
-  const video=document.getElementById('editor-video');
+  document.getElementById('p0').style.display='none';
+  document.getElementById('panel-1').style.display='flex';
+  video=document.getElementById('pvideo');
   video.src=videoUrl;
   video.addEventListener('loadeddata',()=>{
     video.play().catch(()=>{});
     layoutEditor();
+    buildFilmstrip();
+    initTimeline();
+    initCrop();
+    startPreviewLoop();
   },{once:true});
-  window.addEventListener('resize',layoutEditor);
+  window.addEventListener('resize',()=>{layoutEditor();initCrop()});
 }
 
 function layoutEditor(){
-  const top=document.getElementById('editor-top');
-  const video=document.getElementById('editor-video');
-  const vw=video.videoWidth||9,vh=video.videoHeight||16;
-  const tw=top.clientWidth,th=top.clientHeight;
-  const scale=Math.min(tw/vw,th/vh);
-  const dw=vw*scale,dh=vh*scale;
-  video.style.width=dw+'px';
-  video.style.height=dh+'px';
-  video.style.left=((tw-dw)/2)+'px';
-  video.style.top=((th-dh)/2)+'px';
-
-  // Init crop box: square centered, 80% of shorter side
-  const s=Math.min(dw,dh)*0.85;
-  cropBox={
-    x:(tw-s)/2,
-    y:(th-s)/2,
-    size:s
-  };
-  renderCropBox();
+  const top=document.getElementById('ed-top');
+  const avail=window.innerHeight*0.42;
+  top.style.height=avail+'px';
 }
 
-function renderCropBox(){
-  const cb=document.getElementById('crop-box');
-  cb.style.left=cropBox.x+'px';
-  cb.style.top=cropBox.y+'px';
-  cb.style.width=cropBox.size+'px';
-  cb.style.height=cropBox.size+'px';
+// ── FILMSTRIP ─────────────────────────────────────────────────────────────────
+function buildFilmstrip(){
+  const fs=document.getElementById('filmstrip');
+  fs.innerHTML='';
+  const fw=document.getElementById('fw');
+  const W=fw.clientWidth;
+  const H=56;
+  const count=Math.ceil(W/H)+1;
+  const step=st.dur/count;
+  const cv=document.createElement('canvas');
+  cv.width=H;cv.height=H;
+  const ctx=cv.getContext('2d');
+  let i=0;
+  function next(){
+    if(i>=count)return;
+    video.currentTime=i*step;
+    video.addEventListener('seeked',()=>{
+      ctx.drawImage(video,0,0,H,H);
+      const img=document.createElement('img');
+      img.src=cv.toDataURL('image/jpeg',0.5);
+      img.className='film-frame';
+      img.style.width=H+'px';
+      fs.appendChild(img);
+      i++;next();
+    },{once:true});
+  }
+  next();
 }
 
-// Drag crop box
-const cropEl=document.getElementById('crop-box');
-cropEl.addEventListener('pointerdown',e=>{
-  const corner=e.target.dataset.corner;
-  dragging=corner||'move';
-  dragStart={mx:e.clientX,my:e.clientY,bx:cropBox.x,by:cropBox.y,bsize:cropBox.size};
-  cropEl.setPointerCapture(e.pointerId);
-  e.preventDefault();
-});
-cropEl.addEventListener('pointermove',e=>{
-  if(!dragging)return;
-  const dx=e.clientX-dragStart.mx,dy=e.clientY-dragStart.my;
-  const top=document.getElementById('editor-top');
-  const tw=top.clientWidth,th=top.clientHeight;
-  const MIN=60;
-  if(dragging==='move'){
-    cropBox.x=Math.max(0,Math.min(tw-cropBox.size,dragStart.bx+dx));
-    cropBox.y=Math.max(0,Math.min(th-cropBox.size,dragStart.by+dy));
-  } else {
-    // Resize from corner — keep square
-    const delta=Math.max(dx,dy);
-    let newSize=Math.max(MIN,dragStart.bsize+delta);
-    if(dragging==='tl'){
-      cropBox.x=Math.max(0,dragStart.bx-delta);
-      cropBox.y=Math.max(0,dragStart.by-delta);
-      newSize=Math.min(newSize,tw-cropBox.x,th-cropBox.y);
-    } else if(dragging==='tr'){
-      cropBox.y=Math.max(0,dragStart.by-delta);
-      newSize=Math.min(newSize,tw-cropBox.x,th-cropBox.y);
-    } else if(dragging==='bl'){
-      cropBox.x=Math.max(0,dragStart.bx-delta);
-      newSize=Math.min(newSize,tw-cropBox.x,th-cropBox.y);
+// ── TIMELINE ─────────────────────────────────────────────────────────────────
+let tlLeft=0,tlRight=1; // 0-1 normalized
+
+function initTimeline(){
+  tlLeft=0;
+  tlRight=Math.min(1,st.stickerDur/st.dur);
+  renderTimeline();
+  bindTimeline();
+}
+
+function renderTimeline(){
+  const fw=document.getElementById('fw');
+  const W=fw.clientWidth;
+  const lPx=tlLeft*W;
+  const rPx=tlRight*W;
+  document.getElementById('mask-l').style.cssText=`left:0;width:${lPx}px`;
+  document.getElementById('mask-r').style.cssText=`right:0;width:${W-rPx}px`;
+  document.getElementById('tl-sel').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
+  const start=(tlLeft*st.dur).toFixed(1);
+  const end=(tlRight*st.dur).toFixed(1);
+  document.getElementById('t-start').textContent=start+'s';
+  document.getElementById('t-end').textContent=end+'s';
+  st.startTime=parseFloat(start);
+  // Enforce duration pill
+  const durSec=tlRight*st.dur-tlLeft*st.dur;
+  // clamp right to not exceed left+stickerDur
+  document.getElementById('dur-label').textContent=st.dur.toFixed(1)+'s';
+  // Seek video to start
+  if(video && video.readyState>=1) video.currentTime=tlLeft*st.dur;
+}
+
+function bindTimeline(){
+  const fw=document.getElementById('fw');
+  const hl=document.getElementById('h-left');
+  const hr=document.getElementById('h-right');
+  let dragging=null;
+
+  function getX(e){
+    const r=fw.getBoundingClientRect();
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    return Math.max(0,Math.min(1,(cx-r.left)/r.width));
+  }
+
+  function onMove(e){
+    if(!dragging)return;
+    e.preventDefault();
+    const x=getX(e);
+    const minDur=st.stickerDur/st.dur;
+    if(dragging==='left'){
+      tlLeft=Math.min(x,tlRight-minDur);
+      tlLeft=Math.max(0,tlLeft);
+      tlRight=tlLeft+minDur;
     } else {
-      newSize=Math.min(newSize,tw-cropBox.x,th-cropBox.y);
+      tlRight=Math.max(x,tlLeft+minDur);
+      tlRight=Math.min(1,tlRight);
+      tlLeft=tlRight-minDur;
     }
-    cropBox.size=newSize;
+    renderTimeline();
   }
-  renderCropBox();
-  e.preventDefault();
-});
-cropEl.addEventListener('pointerup',()=>{dragging=null});
 
-// ── Slider & duration ──────────────────────────────────────────────────────────
-function updateStart(){
-  const v=parseFloat(document.getElementById('start-slider').value);
-  state.startTime=v;
-  document.getElementById('start-val').textContent=v.toFixed(1)+'s';
-  // Seek video to show that moment
-  const video=document.getElementById('editor-video');
-  if(video && video.readyState>=1) {
-    video.currentTime=v;
-  }
+  function onUp(){dragging=null}
+
+  hl.addEventListener('pointerdown',e=>{dragging='left';hl.setPointerCapture(e.pointerId)});
+  hr.addEventListener('pointerdown',e=>{dragging='right';hr.setPointerCapture(e.pointerId)});
+  document.addEventListener('pointermove',onMove,{passive:false});
+  document.addEventListener('pointerup',onUp);
 }
+
 function setDur(d){
-  state.stickerDuration=d;
+  st.stickerDur=d;
   document.querySelectorAll('.dur-pill').forEach((b,i)=>b.classList.toggle('active',i+1===d));
+  tlRight=Math.min(1,tlLeft+d/st.dur);
+  renderTimeline();
 }
 
-// ── Process ───────────────────────────────────────────────────────────────────
-async function handleProcess(){
-  clearError('error-1');
+// Preview loop
+function startPreviewLoop(){
+  cancelAnimationFrame(rafId);
+  function loop(){
+    if(video && !video.paused){
+      const t=video.currentTime;
+      const endT=tlRight*st.dur;
+      if(t>=endT) video.currentTime=tlLeft*st.dur;
+      // Update playhead
+      const pct=(t-tlLeft*st.dur)/((tlRight-tlLeft)*st.dur);
+      const fw=document.getElementById('fw');
+      const sel=document.getElementById('tl-sel');
+      const selW=sel.offsetWidth;
+      const ph=document.getElementById('playhead');
+      const lPx=tlLeft*fw.clientWidth;
+      ph.style.left=(lPx+Math.max(0,Math.min(1,pct))*selW)+'px';
+    }
+    rafId=requestAnimationFrame(loop);
+  }
+  loop();
+}
 
-  // Convert crop box screen coords to video pixel coords
-  const top=document.getElementById('editor-top');
-  const video=document.getElementById('editor-video');
+// ── CROP ──────────────────────────────────────────────────────────────────────
+let crop={x:0,y:0,w:0,h:0}; // in canvas px
+let cropDrag=null;
+let cropDragStart={};
+
+function initCrop(){
+  const wrap=document.getElementById('crop-wrap');
+  const canvas=document.getElementById('crop-canvas');
+  const vw=video.videoWidth||9,vh=video.videoHeight||16;
+  const W=wrap.clientWidth;
+  const H=Math.round(W*vh/vw);
+  canvas.width=vw;canvas.height=vh;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  wrap.style.height=H+'px';
+
+  // Draw first frame
+  const ctx=canvas.getContext('2d');
+  function draw(){ctx.drawImage(video,0,0,vw,vh);requestAnimationFrame(draw)}
+  draw();
+
+  // Init crop box: centered square 80% of shorter side
+  const s=Math.min(W,H)*0.85;
+  crop={x:(W-s)/2,y:(H-s)/2,w:s,h:s};
+  buildCropOverlay(W,H);
+  bindCrop(W,H);
+}
+
+function buildCropOverlay(W,H){
+  const ov=document.getElementById('crop-overlay');
+  ov.innerHTML=`
+    <div class="crop-shade" id="sh-t" style="top:0;left:0;right:0"></div>
+    <div class="crop-shade" id="sh-b" style="left:0;right:0;bottom:0"></div>
+    <div class="crop-shade" id="sh-l" style="left:0"></div>
+    <div class="crop-shade" id="sh-r" style="right:0"></div>
+    <div class="crop-box-border" id="cbox">
+      <div class="crop-corner tl" data-c="tl"></div>
+      <div class="crop-corner tr" data-c="tr"></div>
+      <div class="crop-corner bl" data-c="bl"></div>
+      <div class="crop-corner br" data-c="br"></div>
+    </div>
+  `;
+  renderCrop(W,H);
+  // Re-bind after rebuild
+  bindCrop(W,H);
+}
+
+function renderCrop(W,H){
+  const {x,y,w,h}=crop;
+  const ost=s=>`${s}px`;
+  document.getElementById('sh-t').style.height=ost(y);
+  document.getElementById('sh-b').style.height=ost(H-y-h);
+  document.getElementById('sh-l').style.top=ost(y);document.getElementById('sh-l').style.height=ost(h);document.getElementById('sh-l').style.width=ost(x);
+  document.getElementById('sh-r').style.top=ost(y);document.getElementById('sh-r').style.height=ost(h);document.getElementById('sh-r').style.width=ost(W-x-w);
+  const cb=document.getElementById('cbox');
+  cb.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
+}
+
+function bindCrop(W,H){
+  const cbox=document.getElementById('cbox');
+  if(!cbox)return;
+
+  function getXY(e){
+    const r=document.getElementById('crop-wrap').getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    return{x:src.clientX-r.left,y:src.clientY-r.top};
+  }
+
+  cbox.addEventListener('pointerdown',e=>{
+    const corner=e.target.dataset.c;
+    cropDrag=corner||'move';
+    cropDragStart={...getXY(e),cx:crop.x,cy:crop.y,cw:crop.w,ch:crop.h};
+    cbox.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  cbox.addEventListener('pointermove',e=>{
+    if(!cropDrag)return;
+    const p=getXY(e);
+    const dx=p.x-cropDragStart.x,dy=p.y-cropDragStart.y;
+    const MIN=60;
+    if(cropDrag==='move'){
+      crop.x=Math.max(0,Math.min(W-crop.w,cropDragStart.cx+dx));
+      crop.y=Math.max(0,Math.min(H-crop.h,cropDragStart.cy+dy));
+    } else {
+      const d=Math.abs(dx)>Math.abs(dy)?dx:dy;
+      let ns;
+      if(cropDrag==='tl'){
+        ns=Math.max(MIN,cropDragStart.cw-d);
+        crop.x=Math.max(0,cropDragStart.cx+cropDragStart.cw-ns);
+        crop.y=Math.max(0,cropDragStart.cy+cropDragStart.ch-ns);
+        crop.w=ns;crop.h=ns;
+      } else if(cropDrag==='tr'){
+        ns=Math.max(MIN,cropDragStart.cw+d);
+        crop.y=Math.max(0,cropDragStart.cy+cropDragStart.ch-ns);
+        crop.w=Math.min(ns,W-crop.x);
+        crop.h=crop.w;
+      } else if(cropDrag==='bl'){
+        ns=Math.max(MIN,cropDragStart.cw-d);
+        crop.x=Math.max(0,cropDragStart.cx+cropDragStart.cw-ns);
+        crop.w=ns;crop.h=Math.min(ns,H-crop.y);
+      } else {
+        ns=Math.max(MIN,cropDragStart.cw+d);
+        crop.w=Math.min(ns,W-crop.x);
+        crop.h=Math.min(crop.w,H-crop.y);
+      }
+    }
+    renderCrop(W,H);
+    e.preventDefault();
+  });
+
+  cbox.addEventListener('pointerup',()=>{cropDrag=null});
+}
+
+// ── PROCESS ───────────────────────────────────────────────────────────────────
+async function doProcess(){
+  hideErr('e1');
+  const wrap=document.getElementById('crop-wrap');
+  const W=wrap.clientWidth;
+  const H=parseInt(wrap.style.height||wrap.offsetHeight);
   const vw=video.videoWidth,vh=video.videoHeight;
-  const tw=top.clientWidth,th=top.clientHeight;
-  const dw=parseFloat(video.style.width),dh=parseFloat(video.style.height);
-  const vLeft=parseFloat(video.style.left),vTop=parseFloat(video.style.top);
-  const scale=dw/vw;
-
-  // Crop box in video space
-  const cx=Math.max(0,(cropBox.x-vLeft)/scale);
-  const cy=Math.max(0,(cropBox.y-vTop)/scale);
-  const cs=cropBox.size/scale;
-
-  const crop={
-    x:Math.round(cx),
-    y:Math.round(cy),
-    width:Math.round(Math.min(cs,vw-cx)),
-    height:Math.round(Math.min(cs,vh-cy)),
+  const scaleX=vw/W,scaleY=vh/H;
+  const cropData={
+    x:Math.round(crop.x*scaleX),
+    y:Math.round(crop.y*scaleY),
+    width:Math.round(crop.w*scaleX),
+    height:Math.round(crop.h*scaleY),
     videoWidth:vw,videoHeight:vh
   };
-
-  showLoading('Generando sticker animado...');
+  showLoad('Generando sticker animado...');
   try{
-    const res=await fetch(`${API}/process`,{
+    const r=await fetch(`${API}/process`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({fileId:state.fileId,startTime:state.startTime,duration:state.stickerDuration,crop})
+      body:JSON.stringify({fileId:st.fileId,startTime:st.startTime,duration:st.stickerDur,crop:cropData})
     });
-    if(!res.ok){const e=await res.json();throw new Error(e.error||'Error al procesar')}
-    
-    // Get as binary blob directly — preserves animation
-    const blob=await res.blob();
-    const blobUrl=URL.createObjectURL(blob);
-    const sizeKB=Math.round(blob.size/1024);
-
-    document.getElementById('result-sticker').src=blobUrl;
-    document.getElementById('download-link').href=blobUrl;
-    document.getElementById('download-link').download='sticker.webp';
-    document.getElementById('size-badge').textContent=sizeKB+'KB';
-
-    document.getElementById('panel-1').style.display='none';
-    document.getElementById('panel-2').style.display='flex';
-    window.removeEventListener('resize',layoutEditor);
-
-    // Auto-descarga
-    setTimeout(()=>{
-      const a=document.createElement('a');
-      a.href=blobUrl;a.download='sticker.webp';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-    },600);
-  }catch(err){showError('error-1',err.message)}
-  finally{hideLoading()}
+    if(!r.ok){const e=await r.json();throw new Error(e.error||'Error')}
+    const blob=await r.blob();
+    st.blobUrl=URL.createObjectURL(blob);
+    st.sizeKB=Math.round(blob.size/1024);
+    showResult();
+  }catch(e){showErr('e1',e.message)}
+  finally{hideLoad()}
 }
 
-// ── Back & Reset ──────────────────────────────────────────────────────────────
-function goBack(){
+function showResult(){
+  cancelAnimationFrame(rafId);
   document.getElementById('panel-1').style.display='none';
-  document.getElementById('panel-0').style.display='flex';
-  window.removeEventListener('resize',layoutEditor);
+  document.getElementById('p2').style.display='flex';
+  document.getElementById('result-sticker').src=st.blobUrl;
+  document.getElementById('sbadge').textContent=st.sizeKB+'KB';
+  // Auto-download
+  setTimeout(doManualDownload,800);
 }
-function handleReset(){
-  document.getElementById('tiktok-url').value='';
-  document.getElementById('panel-2').style.display='none';
-  document.getElementById('panel-0').style.display='flex';
-  document.getElementById('result-sticker').src='';
-  state={fileId:null,videoUrl:null,duration:30,startTime:0,stickerDuration:2};
-  clearError('error-0');clearError('error-1');
-  document.getElementById('start-slider').value=0;
-  document.getElementById('start-val').textContent='0.0s';
+
+function doManualDownload(){
+  if(!st.blobUrl)return;
+  const a=document.createElement('a');
+  a.href=st.blobUrl;a.download='sticker.webp';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function goBack(){
+  cancelAnimationFrame(rafId);
+  document.getElementById('panel-1').style.display='none';
+  document.getElementById('p0').style.display='flex';
+}
+
+function doReset(){
+  document.getElementById('turl').value='';
+  document.getElementById('p2').style.display='none';
+  document.getElementById('p0').style.display='flex';
+  if(st.blobUrl)URL.revokeObjectURL(st.blobUrl);
+  st={fileId:null,dur:30,startTime:0,stickerDur:2,blobUrl:null,sizeKB:0};
 }
 </script>
 </body>
