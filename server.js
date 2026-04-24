@@ -7,9 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const https = require('https');
-const http = require('http');
 
+// Use system ffmpeg on Railway, fallback to static
 try {
   const sys = execSync('which ffmpeg').toString().trim();
   ffmpeg.setFfmpegPath(sys || ffmpegStatic);
@@ -19,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json());
 app.use('/files', express.static(path.join(__dirname, 'tmp')));
 
 const TMP_DIR = path.join(__dirname, 'tmp');
@@ -35,71 +34,33 @@ setInterval(() => {
   } catch {}
 }, 600000);
 
-function downloadFile(url, dest) {
-  return new Promise((resolve, reject) => {
-    const proto = url.startsWith('https') ? https : http;
-    const file = fs.createWriteStream(dest);
-    proto.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Referer': 'https://www.tiktok.com/'
-      }
-    }, res => {
-      if (res.statusCode === 301 || res.statusCode === 302) {
-        file.close();
-        downloadFile(res.headers.location, dest).then(resolve).catch(reject);
-        return;
-      }
-      res.pipe(file);
-      file.on('finish', () => file.close(resolve));
-    }).on('error', err => { fs.unlink(dest, () => {}); reject(err); });
-  });
+function checkYtDlp() {
+  try { execSync('yt-dlp --version', { stdio: 'pipe' }); return true; } catch { return false; }
 }
 
-async function getTikTokVideo(url) {
-  return new Promise((resolve, reject) => {
-    const postData = `url=${encodeURIComponent(url)}&hd=1`;
-    const options = {
-      hostname: 'www.tikwm.com', path: '/api/', method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData), 'User-Agent': 'Mozilla/5.0' }
-    };
-    const req = https.request(options, res => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const json = JSON.parse(data);
-          if (json.code === 0 && json.data?.play) resolve(json.data);
-          else reject(new Error(json.msg || 'Could not get video'));
-        } catch(e) { reject(e); }
-      });
-    });
-    req.on('error', reject);
-    req.write(postData);
-    req.end();
-  });
-}
-
-app.get('/', (req, res) => res.json({ status: 'ok' }));
+app.get('/', (req, res) => res.json({ status: 'ok', ytdlp: checkYtDlp() }));
 
 app.post('/download', async (req, res) => {
   const { url } = req.body;
   if (!url || !/tiktok\.com/i.test(url)) return res.status(400).json({ error: 'Invalid TikTok URL' });
+  if (!checkYtDlp()) return res.status(500).json({ error: 'yt-dlp not available' });
 
   const fileId = uuidv4();
   const outputPath = path.join(TMP_DIR, `${fileId}.mp4`);
   try {
-    const data = await getTikTokVideo(url);
-    const videoUrl = data.hdplay || data.play;
-    await downloadFile(videoUrl, outputPath);
-    if (!fs.existsSync(outputPath) || fs.statSync(outputPath).size < 1000) throw new Error('Download failed');
+    execSync(`yt-dlp -f "best[height<=720][ext=mp4]/best[height<=720]" --merge-output-format mp4 -o "${outputPath}" "${url}"`, { stdio: 'pipe', timeout: 90000 });
+    if (!fs.existsSync(outputPath)) throw new Error('Download failed');
+
+    let duration = 10;
+    try { duration = await new Promise(r => ffmpeg.ffprobe(outputPath, (e, m) => r(e ? 10 : m?.format?.duration || 10))); } catch {}
+
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host;
-    res.json({ success: true, fileId, videoUrl: `${proto}://${host}/files/${fileId}.mp4`, duration: parseFloat(data.duration || 10) });
+    res.json({ success: true, fileId, videoUrl: `${proto}://${host}/files/${fileId}.mp4`, duration: Math.round(duration * 10) / 10 });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
     console.error('Download error:', err.message);
-    res.status(500).json({ error: 'Could not download. Make sure the link is public.' });
+    res.status(500).json({ error: err.message.includes('private') ? 'Video is private.' : 'Could not download. Make sure the link is public.' });
   }
 });
 
@@ -133,10 +94,9 @@ app.post('/process', async (req, res) => {
       await encode(inputPath, opt, 10, 55);
       fs.unlinkSync(outputPath); fs.renameSync(opt, outputPath);
     }
-    res.setHeader('Content-Type', 'image/webp');
-    res.setHeader('Content-Disposition', 'attachment; filename="sticker.webp"');
-    res.setHeader('X-Sticker-Size', Math.round(fs.statSync(outputPath).size / 1024));
-    res.sendFile(outputPath);
+    const proto = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    res.json({ success: true, stickerUrl: `${proto}://${host}/files/${outputId}.webp`, sizeKB: Math.round(fs.statSync(outputPath).size / 1024) });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
     console.error('Process error:', err.message);
@@ -144,4 +104,9 @@ app.post('/process', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`\n🚀 StickerDrop on port ${PORT}`));
+
+// Serve frontend
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+app.listen(PORT, () => console.log(`\n🚀 StickerDrop backend on port ${PORT} | yt-dlp: ${checkYtDlp()}`));
