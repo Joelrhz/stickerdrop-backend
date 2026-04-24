@@ -329,13 +329,14 @@ async function handleDownload(){
     const data=await res.json();
     if(!res.ok)throw new Error(data.error||'Error al descargar');
     state.fileId=data.fileId;
-    state.videoUrl=data.videoUrl;
     state.duration=data.duration||30;
     const slider=document.getElementById('start-slider');
     slider.max=Math.max(0,state.duration-1).toFixed(1);
     slider.value=0;
     document.getElementById('max-label').textContent=state.duration.toFixed(1)+'s';
-    showEditor(data.videoUrl);
+    // Video URL is served from backend /files/
+    const videoUrl=`${API}/files/${data.fileId}.mp4`;
+    showEditor(videoUrl);
   }catch(err){showError('error-0',err.message)}
   finally{hideLoading()}
 }
