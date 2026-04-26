@@ -222,7 +222,7 @@ input[type=url]::placeholder{color:var(--muted)}
         <span class="sbadge" id="sbadge"></span>
       </div>
     </div>
-    <button class="btn-dl" onclick="doDownload2()">⬇️ Descargar Sticker (.webp)</button>
+    <button class="btn-dl" onclick="doDownload2()">⬇️ Descargar Sticker (.gif)</button>
     <div class="div"></div>
     <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;text-align:left">📱 Cómo usarlo en WhatsApp</div>
     <div class="inst">
@@ -448,7 +448,7 @@ async function doProcess(){
 function doDownload2(){
   if(!st.blobUrl)return;
   const a=document.createElement('a');
-  a.href=st.blobUrl;a.download='sticker.webp';
+  a.href=st.blobUrl;a.download='sticker.gif';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 

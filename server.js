@@ -33,14 +33,6 @@ setInterval(() => {
   } catch {}
 }, 600000);
 
-// Instalar yt-dlp si no existe
-const YTDLP_PATH = path.join(__dirname, 'yt-dlp');
-if (!fs.existsSync(YTDLP_PATH)) {
-  try {
-    execSync(`curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ${YTDLP_PATH} && chmod a+rx ${YTDLP_PATH}`, { stdio: 'inherit' });
-  } catch(e) { console.error('yt-dlp install failed:', e.message); }
-}
-
 function downloadFile(url, dest) {
   return new Promise((resolve, reject) => {
     const proto = url.startsWith('https') ? https : http;
@@ -98,7 +90,7 @@ app.post('/download', async (req, res) => {
     res.json({ success: true, fileId, duration: parseFloat(data.duration || 10) });
   } catch (err) {
     try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
-    res.status(500).json({ error: 'Could not download. Make sure the link is public.' });
+    res.status(500).json({ error: 'No se pudo descargar. Verifica que el link sea público.' });
   }
 });
 
@@ -107,43 +99,46 @@ app.post('/process', async (req, res) => {
   if (!fileId || startTime === undefined || !duration || !crop) return res.status(400).json({ error: 'Missing parameters' });
 
   const inputPath = path.join(TMP_DIR, `${fileId}.mp4`);
-  if (!fs.existsSync(inputPath)) return res.status(404).json({ error: 'Video not found. Please download again.' });
+  if (!fs.existsSync(inputPath)) return res.status(404).json({ error: 'Video no encontrado. Descarga de nuevo.' });
 
   const outputId = uuidv4();
-  const outputPath = path.join(TMP_DIR, `${outputId}.webp`);
+  const gifPath = path.join(TMP_DIR, `${outputId}.gif`);
   const dur = Math.min(parseFloat(duration), 4);
   const start = Math.max(0, parseFloat(startTime));
-  const cx = Math.max(0, Math.round(crop.x)), cy = Math.max(0, Math.round(crop.y));
-  const cw = Math.max(64, Math.round(crop.width)), ch = Math.max(64, Math.round(crop.height));
-
-  const encode = (input, out, fps, quality) => new Promise((resolve, reject) => {
-    ffmpeg(input)
-      .inputOptions([`-ss ${start}`, `-t ${dur}`])
-      .videoFilters([`crop=${cw}:${ch}:${cx}:${cy}`, `scale=512:512:flags=lanczos`, `fps=${fps}`].join(','))
-      .noAudio()
-      .outputOptions(['-vcodec libwebp', '-loop 0', '-an', '-vsync 0', `-quality ${quality}`, '-compression_level 6'])
-      .output(out).on('end', resolve).on('error', reject).run();
-  });
+  const cx = Math.max(0, Math.round(crop.x));
+  const cy = Math.max(0, Math.round(crop.y));
+  const cw = Math.max(64, Math.round(crop.width));
+  const ch = Math.max(64, Math.round(crop.height));
 
   try {
-    await encode(inputPath, outputPath, 15, 75);
-    if (fs.statSync(outputPath).size / 1024 > 500) {
-      const opt = outputPath + '_opt.webp';
-      await encode(inputPath, opt, 10, 55);
-      fs.unlinkSync(outputPath); fs.renameSync(opt, outputPath);
-    }
-    res.setHeader('Content-Type', 'image/webp');
-    res.setHeader('Content-Disposition', 'attachment; filename="sticker.webp"');
-    res.setHeader('Access-Control-Expose-Headers', 'X-Sticker-Size');
-    res.setHeader('X-Sticker-Size', Math.round(fs.statSync(outputPath).size / 1024));
-    res.sendFile(path.resolve(outputPath));
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .inputOptions([`-ss ${start}`, `-t ${dur}`])
+        .videoFilters([
+          `crop=${cw}:${ch}:${cx}:${cy}`,
+          `scale=512:512:flags=lanczos`,
+          `fps=12`,
+          `split[s0][s1];[s0]palettegen=max_colors=128[p];[s1][p]paletteuse=dither=bayer`
+        ].join(','))
+        .noAudio()
+        .output(gifPath)
+        .on('end', resolve)
+        .on('error', reject)
+        .run();
+    });
+
+    const sizeKB = Math.round(fs.statSync(gifPath).size / 1024);
+    res.setHeader('Content-Type', 'image/gif');
+    res.setHeader('Content-Disposition', 'attachment; filename="sticker.gif"');
+    res.setHeader('X-Sticker-Size', sizeKB);
+    res.sendFile(path.resolve(gifPath));
   } catch (err) {
-    try { if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath); } catch {}
-    res.status(500).json({ error: 'Processing failed. Please try again.' });
+    try { if (fs.existsSync(gifPath)) fs.unlinkSync(gifPath); } catch {}
+    console.error('Process error:', err.message);
+    res.status(500).json({ error: 'Error procesando. Intenta de nuevo.' });
   }
 });
 
-// Serve frontend
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/app', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
