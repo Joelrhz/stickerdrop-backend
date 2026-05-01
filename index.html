@@ -65,10 +65,11 @@ input[type=url]::placeholder{color:var(--muted)}
 .tl-t{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#22c55e;background:rgba(34,197,94,0.1);padding:3px 8px;border-radius:7px}
 .tl-sep{color:var(--muted);font-size:12px}
 
-/* Timeline bar */
-.fw{position:relative;height:56px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,#1a2a1a,#2a3a2a);touch-action:none;user-select:none}
+/* Timeline bar with frames */
+.fw{position:relative;height:56px;border-radius:8px;overflow:hidden;background:#111;touch-action:none;user-select:none}
+#fsc{position:absolute;inset:0;width:100%;height:56px;pointer-events:none}
 .tl-shade{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.7);pointer-events:none}
-.tl-sel{position:absolute;top:0;bottom:0;border:2px solid #22c55e;border-radius:2px;background:rgba(34,197,94,0.15);pointer-events:none}
+.tl-sel{position:absolute;top:0;bottom:0;border:2px solid #22c55e;border-radius:2px;background:rgba(34,197,94,0.08);pointer-events:none}
 .tl-h{position:absolute;top:0;bottom:0;width:20px;background:#22c55e;display:flex;align-items:center;justify-content:center;cursor:ew-resize;touch-action:none;z-index:3}
 .tl-h::after{content:'⋮';color:#000;font-size:14px;font-weight:900}
 .tl-h.L{left:0;border-radius:3px 0 0 3px}
@@ -164,6 +165,7 @@ input[type=url]::placeholder{color:var(--muted)}
         </div>
       </div>
       <div class="fw" id="fw">
+        <canvas id="fsc"></canvas>
         <div class="tl-shade" id="ml" style="left:0"></div>
         <div class="tl-shade" id="mr" style="right:0"></div>
         <div class="tl-sel" id="tsel">
@@ -286,6 +288,7 @@ function showEditor(){
     renderTL();
     bindTL();
     initCrop();
+    drawFilmstrip();
   },{once:true});
 
   video.addEventListener('play',updatePbtn);
@@ -301,6 +304,33 @@ function updatePbtn(){
 }
 
 // ── FILMSTRIP ─────────────────────────────────────────────────────────────────
+// ── FILMSTRIP - fast, captures frames as video plays ─────────────────────────
+function drawFilmstrip(){
+  const fw=document.getElementById('fw');
+  const cv=document.getElementById('fsc');
+  const W=fw.clientWidth, H=56;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#1a1a1a'; ctx.fillRect(0,0,W,H);
+  const count=Math.ceil(W/H);
+  const fw2=W/count;
+  // Use requestVideoFrameCallback if available, otherwise setTimeout
+  let i=0;
+  function captureNext(){
+    if(i>=count) return;
+    const t=parseFloat(((i/count)*st.dur).toFixed(2));
+    const onSeeked=()=>{
+      try{ ctx.drawImage(video,Math.floor(i*fw2),0,Math.ceil(fw2)+1,H); }catch(e){}
+      i++;
+      setTimeout(captureNext,80);
+    };
+    video.addEventListener('seeked',onSeeked,{once:true});
+    video.currentTime=t;
+  }
+  // Start after a short delay so editor feels instant
+  setTimeout(captureNext,500);
+}
+
 // ── TIMELINE ─────────────────────────────────────────────────────────────────
 function renderTL(){
   const W=document.getElementById('fw').clientWidth;
@@ -319,41 +349,50 @@ function renderTL(){
 
 function bindTL(){
   const fw=document.getElementById('fw');
+  const hl=document.getElementById('hl');
+  const hr=document.getElementById('hr');
+  const MIN=0.5/st.dur;
+  const MAX=4/st.dur;
+  let drag=null;
+
   function getN(e){
     const r=fw.getBoundingClientRect();
-    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cx=(e.touches?e.touches[0]:e).clientX;
     return Math.max(0,Math.min(1,(cx-r.left)/r.width));
   }
-  let drag=null;
-  const MIN=0.5/st.dur; // minimum 0.5s selection
-  const MAX=4/st.dur;   // maximum 4s selection
 
-  document.getElementById('hl').addEventListener('pointerdown',e=>{
-    drag='L';
-    document.getElementById('hl').setPointerCapture(e.pointerId);
-    e.stopPropagation();
-  });
-  document.getElementById('hr').addEventListener('pointerdown',e=>{
-    drag='R';
-    document.getElementById('hr').setPointerCapture(e.pointerId);
-    e.stopPropagation();
-  });
-  document.addEventListener('pointermove',e=>{
+  function onMove(e){
     if(!drag)return;
     e.preventDefault();
     const x=getN(e);
     if(drag==='L'){
       tlL=Math.max(0,Math.min(tlR-MIN,x));
-      // Enforce max 4s
-      if(tlR-tlL>MAX) tlL=tlR-MAX;
+      if(tlR-tlL>MAX) tlR=tlL+MAX;
     } else {
       tlR=Math.min(1,Math.max(tlL+MIN,x));
-      // Enforce max 4s
-      if(tlR-tlL>MAX) tlR=tlL+MAX;
+      if(tlR-tlL>MAX) tlL=tlR-MAX;
     }
     renderTL();
-  },{passive:false});
-  document.addEventListener('pointerup',()=>{drag=null});
+  }
+
+  hl.addEventListener('pointerdown',e=>{drag='L';hl.setPointerCapture(e.pointerId);e.stopPropagation()});
+  hr.addEventListener('pointerdown',e=>{drag='R';hr.setPointerCapture(e.pointerId);e.stopPropagation()});
+  hl.addEventListener('pointermove',onMove,{passive:false});
+  hr.addEventListener('pointermove',onMove,{passive:false});
+  hl.addEventListener('pointerup',()=>{drag=null});
+  hr.addEventListener('pointerup',()=>{drag=null});
+
+  // Also allow dragging on the filmstrip itself to seek
+  fw.addEventListener('pointerdown',e=>{
+    if(e.target===hl||e.target===hr)return;
+    const x=getN(e);
+    // Move closest handle
+    const dL=Math.abs(x-tlL), dR=Math.abs(x-tlR);
+    drag=dL<dR?'L':'R';
+    fw.setPointerCapture(e.pointerId);
+  });
+  fw.addEventListener('pointermove',onMove,{passive:false});
+  fw.addEventListener('pointerup',()=>{drag=null});
 }
 
 // ── CROP ──────────────────────────────────────────────────────────────────────
