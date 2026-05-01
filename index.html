@@ -65,12 +65,11 @@ input[type=url]::placeholder{color:var(--muted)}
 .tl-t{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#22c55e;background:rgba(34,197,94,0.1);padding:3px 8px;border-radius:7px}
 .tl-sep{color:var(--muted);font-size:12px}
 
-/* Filmstrip */
-.fw{position:relative;height:56px;border-radius:8px;overflow:hidden;background:#111;touch-action:none;user-select:none}
-#fsc{position:absolute;inset:0;width:100%;height:100%}
-.tl-shade{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.65);pointer-events:none}
-.tl-sel{position:absolute;top:0;bottom:0;border:2px solid #22c55e;border-radius:2px;pointer-events:none}
-.tl-h{position:absolute;top:0;bottom:0;width:18px;background:#22c55e;display:flex;align-items:center;justify-content:center;cursor:ew-resize;touch-action:none;z-index:3}
+/* Timeline bar */
+.fw{position:relative;height:56px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,#1a2a1a,#2a3a2a);touch-action:none;user-select:none}
+.tl-shade{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.7);pointer-events:none}
+.tl-sel{position:absolute;top:0;bottom:0;border:2px solid #22c55e;border-radius:2px;background:rgba(34,197,94,0.15);pointer-events:none}
+.tl-h{position:absolute;top:0;bottom:0;width:20px;background:#22c55e;display:flex;align-items:center;justify-content:center;cursor:ew-resize;touch-action:none;z-index:3}
 .tl-h::after{content:'⋮';color:#000;font-size:14px;font-weight:900}
 .tl-h.L{left:0;border-radius:3px 0 0 3px}
 .tl-h.R{right:0;border-radius:0 3px 3px 0}
@@ -165,7 +164,6 @@ input[type=url]::placeholder{color:var(--muted)}
         </div>
       </div>
       <div class="fw" id="fw">
-        <canvas id="fsc"></canvas>
         <div class="tl-shade" id="ml" style="left:0"></div>
         <div class="tl-shade" id="mr" style="right:0"></div>
         <div class="tl-sel" id="tsel">
@@ -287,9 +285,6 @@ function showEditor(){
     document.getElementById('tlend').textContent=st.dur.toFixed(1)+'s';
     renderTL();
     bindTL();
-    // Draw filmstrip in background after a short delay
-    setTimeout(drawFilmstrip, 300);
-    // Init crop
     initCrop();
   },{once:true});
 
@@ -306,29 +301,6 @@ function updatePbtn(){
 }
 
 // ── FILMSTRIP ─────────────────────────────────────────────────────────────────
-function drawFilmstrip(){
-  const fw=document.getElementById('fw');
-  const cv=document.getElementById('fsc');
-  const W=fw.clientWidth, H=56;
-  cv.width=W; cv.height=H;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#1a1a1a'; ctx.fillRect(0,0,W,H);
-  const count=Math.ceil(W/H);
-  const fw2=W/count;
-  let i=0;
-  const origTime=video.currentTime;
-  function next(){
-    if(i>=count){video.currentTime=st.startTime;return}
-    video.currentTime=(i/count)*st.dur;
-    video.addEventListener('seeked',()=>{
-      ctx.drawImage(video,Math.floor(i*fw2),0,Math.ceil(fw2),H);
-      i++;
-      setTimeout(next,30);
-    },{once:true});
-  }
-  next();
-}
-
 // ── TIMELINE ─────────────────────────────────────────────────────────────────
 function renderTL(){
   const W=document.getElementById('fw').clientWidth;
