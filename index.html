@@ -59,6 +59,11 @@ input[type=url]::placeholder{color:var(--muted)}
 /* Play/pause btn */
 .play-btn{position:absolute;top:10px;right:10px;width:38px;height:38px;background:rgba(0,0,0,0.6);border-radius:50%;border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;-webkit-tap-highlight-color:transparent}
 
+/* Crop preview */
+.crop-preview-wrap{background:#000;display:flex;flex-direction:column;align-items:center;padding:8px;gap:4px;flex-shrink:0}
+#crop-preview{border-radius:8px;border:2px solid rgba(34,197,94,0.4);display:block}
+.crop-preview-lbl{font-size:10px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+
 /* BOTTOM: controls panel */
 .ed-bot{flex:0 0 auto;background:var(--surface);padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
 
@@ -237,26 +242,50 @@ function updatePbtn(){
   if(b)b.textContent=video.paused?'▶':'⏸';
 }
 
-// ── FILMSTRIP ─────────────────────────────────────────────────────────────────
+// ── FILMSTRIP - captures frames while video plays, no seeking ─────────────────
 function drawFilmstrip(){
   const fw=document.getElementById('fw');
   const cv=document.getElementById('fsc');
   const W=fw.clientWidth,H=52;
   cv.width=W;cv.height=H;
   const ctx=cv.getContext('2d');
-  ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#222';ctx.fillRect(0,0,W,H);
+
   const count=Math.ceil(W/H);
   const fw2=W/count;
-  let i=0;
-  function next(){
-    if(i>=count){video.currentTime=st.startTime;return}
-    video.currentTime=(i/count)*st.dur;
-    video.addEventListener('seeked',()=>{
-      try{ctx.drawImage(video,Math.floor(i*fw2),0,Math.ceil(fw2)+1,H)}catch(e){}
-      i++;setTimeout(next,60);
-    },{once:true});
+  const captured=new Set();
+
+  // As video plays naturally, grab frames
+  function captureFrame(){
+    const pct=video.currentTime/st.dur;
+    const slot=Math.floor(pct*count);
+    if(slot>=0&&slot<count&&!captured.has(slot)){
+      captured.add(slot);
+      try{ctx.drawImage(video,Math.floor(slot*fw2),0,Math.ceil(fw2)+1,H)}catch(e){}
+    }
+    if(captured.size<count){
+      requestAnimationFrame(captureFrame);
+    }
   }
-  next();
+  // Also do a fast seek pass for any missing frames after 2s
+  setTimeout(()=>{
+    let i=0;
+    function fillMissing(){
+      while(i<count&&captured.has(i))i++;
+      if(i>=count)return;
+      video.currentTime=(i/count)*st.dur;
+      video.addEventListener('seeked',()=>{
+        if(!captured.has(i)){
+          captured.add(i);
+          try{ctx.drawImage(video,Math.floor(i*fw2),0,Math.ceil(fw2)+1,H)}catch(e){}
+        }
+        i++;setTimeout(fillMissing,30);
+      },{once:true});
+    }
+    fillMissing();
+  },2000);
+
+  captureFrame();
 }
 
 // ── TIMELINE ─────────────────────────────────────────────────────────────────
@@ -357,6 +386,31 @@ function renderCrop(){
   document.getElementById('cs-l').style.cssText=`top:${y}px;left:0;width:${x}px;height:${h}px`;
   document.getElementById('cs-r').style.cssText=`top:${y}px;right:0;width:${W-x-w}px;height:${h}px`;
   document.getElementById('cf').style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
+  drawPreview();
+}
+
+function drawPreview(){
+  const pv=document.getElementById('crop-preview');
+  const SIZE=100;
+  pv.width=SIZE;pv.height=SIZE;
+  pv.style.width=SIZE+'px';pv.style.height=SIZE+'px';
+  const ctx=pv.getContext('2d');
+  ctx.clearRect(0,0,SIZE,SIZE);
+  if(!video||video.readyState<2)return;
+  vRect=getVideoRect();
+  // Convert screen crop to video coords
+  const sx=Math.max(0,(crop.x-vRect.left)/vRect.scale);
+  const sy=Math.max(0,(crop.y-vRect.top)/vRect.scale);
+  const sw=Math.min(crop.w/vRect.scale, vRect.vw-sx);
+  const sh=Math.min(crop.h/vRect.scale, vRect.vh-sy);
+  ctx.drawImage(video,sx,sy,sw,sh,0,0,SIZE,SIZE);
+}
+
+// Start preview loop
+function startPreviewLoop(){
+  cancelAnimationFrame(rafId);
+  function loop(){drawPreview();rafId=requestAnimationFrame(loop)}
+  loop();
 }
 
 function bindCrop(){
