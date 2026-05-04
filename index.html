@@ -4,523 +4,360 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>StickerDrop</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#070709;--surface:#0f0f13;--s2:#16161c;--border:rgba(255,255,255,0.08);--green:#22c55e;--text:#ededf0;--muted:#5a5a6e;--dim:#8f8fa8}
-html,body{height:100%;-webkit-font-smoothing:antialiased;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070709;--sur:#0f0f13;--s2:#16161c;--bor:rgba(255,255,255,0.08);--gr:#22c55e;--tx:#ededf0;--mu:#5a5a6e;--di:#8f8fa8}
+html,body{height:100%;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh}
 
-/* ── PAGES ── */
-.page{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow-y:auto}
-.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.logo-icon{width:38px;height:38px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px}
-.logo-text span{color:#22c55e}
-.tagline{color:var(--muted);font-size:13px;margin-bottom:28px;text-align:center}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:440px;position:relative}
+/* PAGE 0 */
+#p0{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.logo-icon{width:36px;height:36px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.logo-txt{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px}
+.logo-txt span{color:var(--gr)}
+.tag{color:var(--mu);font-size:13px;margin-bottom:28px}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:16px;padding:22px;width:100%;max-width:420px;position:relative}
 .card::before{content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,0.4),transparent)}
-.lbl{display:block;font-family:'Syne',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.lbl{display:block;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:8px}
 .irow{display:flex;gap:8px}
-input[type=url]{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none}
-input[type=url]:focus{border-color:rgba(34,197,94,0.4)}
-input[type=url]::placeholder{color:var(--muted)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border-radius:10px;transition:all 0.15s;-webkit-tap-highlight-color:transparent}
-.btn:active{transform:scale(0.97)}
-.btn-red{padding:13px 18px;background:linear-gradient(135deg,#ff2d6b,#ff6b2d);color:#fff}
-.btn-green{padding:14px;width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:15px;border-radius:12px}
-.btn-ghost{padding:12px 16px;background:var(--s2);color:var(--dim);border:1px solid var(--border);border-radius:10px;font-size:14px}
-.err{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
-.infobox{background:var(--s2);border-radius:10px;padding:12px 14px;margin-top:14px}
-.infobox p{font-size:12px;color:var(--muted);line-height:1.6}
-.div{height:1px;background:var(--border);margin:16px 0}
+input{flex:1;background:var(--s2);border:1px solid var(--bor);border-radius:10px;padding:13px 14px;color:var(--tx);font-size:14px;font-family:'DM Sans',sans-serif;outline:none}
+input:focus{border-color:rgba(34,197,94,.4)}
+input::placeholder{color:var(--mu)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;border-radius:10px;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.97)}
+.b-red{padding:13px 18px;font-size:14px;background:linear-gradient(135deg,#ff2d6b,#ff6b2d);color:#fff}
+.b-gr{padding:14px;width:100%;font-size:15px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:12px}
+.b-gh{padding:12px 16px;font-size:14px;background:var(--s2);color:var(--di);border:1px solid var(--bor)}
+.err{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
+.info{background:var(--s2);border-radius:10px;padding:11px 14px;margin-top:12px;font-size:12px;color:var(--mu);line-height:1.6}
 
-/* ── EDITOR: full screen, 2 sections ── */
+/* PAGE 1 - EDITOR */
 #p1{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column}
 
-/* TOP: video with crop overlay — takes most space */
-.ed-top{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
-#pv{max-width:100%;max-height:100%;object-fit:contain;display:block;position:relative;z-index:1}
+/* Video area - takes remaining space */
+.vwrap{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
+#vid{max-width:100%;max-height:100%;object-fit:contain;display:block}
 
-/* Crop overlay — sits on top of video */
-#crop-overlay{position:absolute;inset:0;z-index:2;pointer-events:none}
-.cshade{position:absolute;background:rgba(0,0,0,0.55);pointer-events:none}
-.cframe{position:absolute;border:2px solid rgba(255,255,255,0.9);pointer-events:all;touch-action:none;cursor:move;z-index:3}
-.cframe::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,0.08) 1px,transparent 1px) 0 0/33.33% 33.33%,linear-gradient(90deg,rgba(255,255,255,0.08) 1px,transparent 1px) 0 0/33.33% 33.33%;pointer-events:none}
-.ch{position:absolute;width:26px;height:26px;background:#22c55e;border-radius:4px;touch-action:none;pointer-events:all;z-index:10}
+/* Crop frame overlay - positioned by JS */
+#cov{position:absolute;inset:0;pointer-events:none;z-index:2}
+.cs{position:absolute;background:rgba(0,0,0,.6);pointer-events:none}
+#cf{position:absolute;border:2.5px solid #fff;pointer-events:all;touch-action:none;cursor:move;z-index:3}
+#cf::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px) 0 0/33.33% 33.33%,linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px) 0 0/33.33% 33.33%;pointer-events:none}
+.ch{position:absolute;width:24px;height:24px;background:var(--gr);border-radius:4px;pointer-events:all;touch-action:none;z-index:10}
 .ch.tl{top:-4px;left:-4px;cursor:nw-resize}
 .ch.tr{top:-4px;right:-4px;cursor:ne-resize}
 .ch.bl{bottom:-4px;left:-4px;cursor:sw-resize}
 .ch.br{bottom:-4px;right:-4px;cursor:se-resize}
+.hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;pointer-events:none;z-index:5;white-space:nowrap}
+.pbtn{position:absolute;top:10px;right:10px;width:36px;height:36px;background:rgba(0,0,0,.6);border-radius:50%;border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;-webkit-tap-highlight-color:transparent}
 
-/* Hint label */
-.crop-hint-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5;font-family:'DM Sans',sans-serif}
+/* Controls panel */
+.ctrl{flex:0 0 auto;background:var(--sur);padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.slim{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
+.tinfo{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--gr)}
 
-/* Play/pause btn */
-.play-btn{position:absolute;top:10px;right:10px;width:38px;height:38px;background:rgba(0,0,0,0.6);border-radius:50%;border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;-webkit-tap-highlight-color:transparent}
+/* Simple slider range for start/end */
+.tl-wrap{display:flex;flex-direction:column;gap:6px}
+.tl-track{position:relative;height:48px;background:var(--s2);border-radius:8px;touch-action:none;user-select:none;overflow:hidden}
+.tl-fill{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.15);border:2px solid var(--gr)}
+.tl-handle{position:absolute;top:0;bottom:0;width:22px;background:var(--gr);display:flex;align-items:center;justify-content:center;cursor:ew-resize;touch-action:none;z-index:3}
+.tl-handle::after{content:'⋮';color:#000;font-size:14px;font-weight:900}
+.tl-handle.L{left:0;border-radius:6px 0 0 6px}
+.tl-handle.R{right:0;border-radius:0 6px 6px 0}
+.tl-time{position:absolute;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:rgba(255,255,255,.6);pointer-events:none;left:50%;transform:translate(-50%,-50%)}
+.tl-sub{display:flex;justify-content:space-between}
+.tl-sub span{font-size:11px;color:var(--mu)}
+.brow{display:flex;gap:10px}
+.errb{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:11px 14px;color:#f87171;font-size:13px;display:none}
 
-/* Crop preview */
-.crop-preview-wrap{background:#000;display:flex;flex-direction:column;align-items:center;padding:8px;gap:4px;flex-shrink:0}
-#crop-preview{border-radius:8px;border:2px solid rgba(34,197,94,0.4);display:block}
-.crop-preview-lbl{font-size:10px;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
-
-/* BOTTOM: controls panel */
-.ed-bot{flex:0 0 auto;background:var(--surface);padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
-
-/* Timeline */
-.tl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.tl-lbl{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
-.tl-info{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#22c55e}
-
-.fw{position:relative;height:52px;border-radius:8px;overflow:hidden;background:#111;touch-action:none;user-select:none}
-#fsc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.tl-shade{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.72);pointer-events:none}
-.tl-sel{position:absolute;top:0;bottom:0;border:2px solid #22c55e;background:rgba(34,197,94,0.08);pointer-events:none}
-.tl-h{position:absolute;top:0;bottom:0;width:20px;background:#22c55e;display:flex;align-items:center;justify-content:center;touch-action:none;z-index:3;cursor:ew-resize}
-.tl-h::after{content:'⋮';color:#000;font-size:13px;font-weight:900}
-.tl-h.L{left:0;border-radius:3px 0 0 3px}
-.tl-h.R{right:0;border-radius:0 3px 3px 0}
-.tl-times{display:flex;justify-content:space-between;margin-top:4px}
-.tl-times span{font-size:11px;color:var(--muted)}
-
-/* Buttons */
-.bot-row{display:flex;gap:10px}
-
-/* ── RESULT ── */
-.r-page{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;overflow-y:auto}
-.stframe{position:relative;border-radius:14px;overflow:hidden;border:2px solid rgba(34,197,94,0.3);box-shadow:0 0 36px rgba(34,197,94,0.1);margin-bottom:20px}
-#rv{display:block;width:220px;height:220px;object-fit:cover}
-.sbadge{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,0.75);border-radius:5px;padding:2px 7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#22c55e}
-.btn-dl{padding:14px;width:100%;max-width:440px;background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;margin-bottom:16px}
-.inst{background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:14px;margin-bottom:14px;width:100%;max-width:440px}
-.ist{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+/* PAGE 2 */
+#p2{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;background:var(--bg)}
+.sframe{position:relative;border-radius:14px;overflow:hidden;border:2px solid rgba(34,197,94,.3);box-shadow:0 0 36px rgba(34,197,94,.1);margin-bottom:18px}
+#rv{display:block;width:200px;height:200px;object-fit:cover}
+.sba{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,.75);border-radius:5px;padding:2px 7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--gr)}
+.b-dl{padding:14px;width:100%;max-width:420px;background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;margin-bottom:14px}
+.inst{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:420px}
+.ist{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px}
 .ist:last-child{margin-bottom:0}
-.isn{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(34,197,94,0.15);color:#22c55e;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px}
+.isn{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(34,197,94,.15);color:var(--gr);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px}
 .ist p{color:#b0b0c4;font-size:13px;line-height:1.5}
-.ist p strong{color:var(--text);font-weight:500}
+.ist p strong{color:var(--tx);font-weight:500}
 
-/* Loading */
-#lov{position:fixed;inset:0;background:rgba(7,7,9,0.92);backdrop-filter:blur(8px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-#lov.show{display:flex}
-.lring{width:48px;height:48px;border:3px solid rgba(34,197,94,0.15);border-top-color:#22c55e;border-radius:50%;animation:spin 0.8s linear infinite}
-.ltxt{font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:var(--dim)}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* Loader */
+#lov{position:fixed;inset:0;background:rgba(7,7,9,.92);backdrop-filter:blur(8px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#lov.on{display:flex}
+.ring{width:48px;height:48px;border:3px solid rgba(34,197,94,.15);border-top-color:var(--gr);border-radius:50%;animation:sp .8s linear infinite}
+.ltx{font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:var(--di)}
+@keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div id="lov"><div class="lring"></div><p class="ltxt" id="ltxt">Procesando...</p></div>
+<div id="lov"><div class="ring"></div><p class="ltx" id="ltx">Procesando...</p></div>
 
-<!-- STEP 0 -->
-<div class="page" id="p0">
-  <div class="logo-row"><div class="logo-icon">🎯</div><span class="logo-text">Sticker<span>Drop</span></span></div>
-  <p class="tagline">TikTok → WhatsApp · Zero hassle</p>
+<!-- PAGE 0 -->
+<div id="p0">
+  <div class="logo"><div class="logo-icon">🎯</div><span class="logo-txt">Sticker<span>Drop</span></span></div>
+  <p class="tag">TikTok → WhatsApp · Zero hassle</p>
   <div class="card">
     <label class="lbl">TikTok Video URL</label>
     <div class="irow">
-      <input type="url" id="turl" placeholder="https://vt.tiktok.com/..." autocomplete="off" spellcheck="false"/>
-      <button class="btn btn-red" onclick="doDownload()">🎵 Go</button>
+      <input id="url" type="url" placeholder="https://vt.tiktok.com/..." autocomplete="off" spellcheck="false"/>
+      <button class="btn b-red" onclick="dl()">🎵 Go</button>
     </div>
     <div class="err" id="e0"></div>
-    <div class="infobox"><p>✓ Links cortos y largos · ✓ Sin cuenta · ✓ Gratis</p></div>
+    <div class="info">✓ Links cortos y largos · ✓ Sin cuenta · ✓ Gratis</div>
   </div>
 </div>
 
-<!-- STEP 1: EDITOR -->
+<!-- PAGE 1 - EDITOR -->
 <div id="p1">
-  <!-- Video with crop overlay -->
-  <div class="ed-top" id="ed-top">
-    <video id="pv" muted playsinline crossorigin="anonymous" loop></video>
-    <div id="crop-overlay">
-      <!-- Shades and frame injected by JS -->
+  <div class="vwrap" id="vw">
+    <video id="vid" muted playsinline crossorigin="anonymous" loop></video>
+    <div id="cov">
+      <div class="cs" id="st"></div>
+      <div class="cs" id="sb"></div>
+      <div class="cs" id="sl"></div>
+      <div class="cs" id="sr"></div>
+      <div id="cf">
+        <div class="ch tl" data-c="tl"></div>
+        <div class="ch tr" data-c="tr"></div>
+        <div class="ch bl" data-c="bl"></div>
+        <div class="ch br" data-c="br"></div>
+      </div>
     </div>
-    <div class="crop-hint-label">Arrastra las esquinas verdes para recortar</div>
-    <button class="play-btn" id="pbtn" onclick="togglePlay()">⏸</button>
+    <div class="hint">Arrastra esquinas verdes para recortar</div>
+    <button class="pbtn" id="pb" onclick="tp()">⏸</button>
   </div>
 
-  <!-- Controls -->
-  <div class="ed-bot">
-    <div>
-      <div class="tl-row">
-        <span class="tl-lbl">Clip</span>
-        <span class="tl-info" id="tl-info">0.0s → 2.0s · 2.0s</span>
+  <div class="ctrl">
+    <div class="tl-wrap">
+      <div class="row">
+        <span class="slim">Clip</span>
+        <span class="tinfo" id="tinfo">0.0s → 2.0s · 2.0s</span>
       </div>
-      <div class="fw" id="fw">
-        <canvas id="fsc"></canvas>
-        <div class="tl-shade" id="ml" style="left:0"></div>
-        <div class="tl-shade" id="mr" style="right:0"></div>
-        <div class="tl-sel" id="tsel">
-          <div class="tl-h L" id="hl"></div>
-          <div class="tl-h R" id="hr"></div>
-        </div>
+      <div class="tl-track" id="tt">
+        <div class="tl-fill" id="tf"></div>
+        <div class="tl-handle L" id="hl"></div>
+        <div class="tl-handle R" id="hr"></div>
+        <span class="tl-time" id="tlt"></span>
       </div>
-      <div class="tl-times"><span>0s</span><span id="tlend">0s</span></div>
+      <div class="tl-sub"><span>0s</span><span id="te">0s</span></div>
     </div>
-    <div class="err" id="e1"></div>
-    <div class="bot-row">
-      <button class="btn btn-ghost" onclick="goBack()">← Atrás</button>
-      <button class="btn btn-green" onclick="doProcess()" style="flex:1">✨ Generar Sticker</button>
+    <div class="errb" id="e1"></div>
+    <div class="brow">
+      <button class="btn b-gh" onclick="back()">← Atrás</button>
+      <button class="btn b-gr" onclick="proc()" style="flex:1">✨ Generar Sticker</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 2 -->
-<div class="r-page" id="p2" style="display:none">
-  <div class="logo-row" style="margin-bottom:4px"><div class="logo-icon">🎯</div><span class="logo-text">Sticker<span>Drop</span></span></div>
-  <p class="tagline">¡Listo! 🎉</p>
-  <div class="stframe">
-    <img id="rv" src="" alt="Sticker"/>
-    <span class="sbadge" id="sbadge"></span>
-  </div>
-  <button class="btn-dl" onclick="doDownload2()">⬇️ Descargar Sticker (.gif)</button>
+<!-- PAGE 2 -->
+<div id="p2">
+  <div class="logo" style="margin-bottom:4px"><div class="logo-icon">🎯</div><span class="logo-txt">Sticker<span>Drop</span></span></div>
+  <p class="tag">¡Listo! 🎉</p>
+  <div class="sframe"><img id="rv" src="" alt=""/><span class="sba" id="sb2"></span></div>
+  <button class="b-dl" onclick="dl2()">⬇️ Descargar Sticker (.gif)</button>
   <div class="inst">
     <div class="ist"><div class="isn">1</div><p>Descarga el <strong>.gif</strong> arriba</p></div>
     <div class="ist"><div class="isn">2</div><p>Abre <strong>Sticker Maker</strong> (gratis iOS y Android)</p></div>
     <div class="ist"><div class="isn">3</div><p>Crea pack → <strong>Importa</strong> el archivo</p></div>
     <div class="ist"><div class="isn">4</div><p>Agrega a WhatsApp y <strong>¡listo!</strong> 🎊</p></div>
   </div>
-  <button class="btn btn-ghost" style="width:100%;max-width:440px" onclick="doReset()">← Crear otro sticker</button>
+  <button class="btn b-gh" style="width:100%;max-width:420px" onclick="reset()">← Crear otro</button>
 </div>
 
 <script>
-const API='';
-let st={fileId:null,dur:10,startTime:0,stickerDur:2,blobUrl:null};
-let video,rafId,tlL=0,tlR=0.2;
-// Crop state in screen coords relative to video element
-let crop={x:0,y:0,w:0,h:0};
-let vRect={left:0,top:0,w:0,h:0}; // video element bounds on screen
+let st={fid:null,dur:10,t0:0,tdur:2,blob:null};
+let vid,vR={},cr={x:0,y:0,w:0,h:0},L=0,R=0.2;
 
-function showLoad(t){document.getElementById('ltxt').textContent=t;document.getElementById('lov').classList.add('show')}
-function hideLoad(){document.getElementById('lov').classList.remove('show')}
-function showErr(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block'}
-function hideErr(id){document.getElementById(id).style.display='none'}
+const $=id=>document.getElementById(id);
+function load(t){$('ltx').textContent=t;$('lov').classList.add('on')}
+function unload(){$('lov').classList.remove('on')}
+function err(id,m){const e=$(id);e.textContent=m;e.style.display='block'}
+function noerr(id){$(id).style.display='none'}
 
 // ── DOWNLOAD ──────────────────────────────────────────────────────────────────
-document.getElementById('turl').addEventListener('keydown',e=>{if(e.key==='Enter')doDownload()});
-async function doDownload(){
-  const url=document.getElementById('turl').value.trim();
-  if(!url||!/tiktok\.com/i.test(url)){showErr('e0','⚠️ Pega un link válido de TikTok');return}
-  hideErr('e0');
-  showLoad('Descargando video de TikTok...');
+$('url').addEventListener('keydown',e=>{if(e.key==='Enter')dl()});
+async function dl(){
+  const url=$('url').value.trim();
+  if(!url||!/tiktok\.com/i.test(url)){err('e0','⚠️ Pega un link válido de TikTok');return}
+  noerr('e0');load('Descargando video...');
   try{
     const r=await fetch('/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||'Error');
-    st.fileId=d.fileId;st.dur=Math.min(d.duration||10,60);st.startTime=0;
-    hideLoad();
-    showEditor();
-  }catch(e){showErr('e0',e.message);hideLoad()}
+    st.fid=d.fileId;st.dur=Math.min(d.duration||10,60);
+    unload();startEditor();
+  }catch(e){err('e0',e.message);unload()}
 }
 
 // ── EDITOR ────────────────────────────────────────────────────────────────────
-function showEditor(){
-  document.getElementById('p0').style.display='none';
-  document.getElementById('p1').style.display='flex';
-  video=document.getElementById('pv');
-  video.src=`/files/${st.fileId}.mp4`;
-  video.addEventListener('loadeddata',()=>{
-    video.play().catch(()=>{});
-    updatePbtn();
-    tlL=0;tlR=Math.min(1,2/st.dur);
-    document.getElementById('tlend').textContent=st.dur.toFixed(1)+'s';
-    renderTL();
-    bindTL();
-    // Init crop after video renders
+function startEditor(){
+  $('p0').style.display='none';
+  $('p1').style.display='flex';
+  vid=$('vid');
+  vid.src=`/files/${st.fid}.mp4`;
+  vid.addEventListener('loadeddata',()=>{
+    vid.play().catch(()=>{});
+    upPb();
+    L=0;R=Math.min(1,2/st.dur);
+    $('te').textContent=st.dur.toFixed(1)+'s';
+    renderTL();bindTL();
     requestAnimationFrame(()=>requestAnimationFrame(initCrop));
-    // Filmstrip in background
-    setTimeout(drawFilmstrip,600);
   },{once:true});
-  video.addEventListener('play',updatePbtn);
-  video.addEventListener('pause',updatePbtn);
+  vid.addEventListener('play',upPb);
+  vid.addEventListener('pause',upPb);
 }
 
-function togglePlay(){
-  if(!video)return;
-  video.paused?video.play().catch(()=>{}):video.pause();
-}
-function updatePbtn(){
-  const b=document.getElementById('pbtn');
-  if(b)b.textContent=video.paused?'▶':'⏸';
-}
+function tp(){vid.paused?vid.play().catch(()=>{}):vid.pause()}
+function upPb(){$('pb').textContent=vid.paused?'▶':'⏸'}
 
-// ── FILMSTRIP - captures frames while video plays, no seeking ─────────────────
-function drawFilmstrip(){
-  const fw=document.getElementById('fw');
-  const cv=document.getElementById('fsc');
-  const W=fw.clientWidth,H=52;
-  cv.width=W;cv.height=H;
-  const ctx=cv.getContext('2d');
-  ctx.fillStyle='#222';ctx.fillRect(0,0,W,H);
-
-  const count=Math.ceil(W/H);
-  const fw2=W/count;
-  const captured=new Set();
-
-  // As video plays naturally, grab frames
-  function captureFrame(){
-    const pct=video.currentTime/st.dur;
-    const slot=Math.floor(pct*count);
-    if(slot>=0&&slot<count&&!captured.has(slot)){
-      captured.add(slot);
-      try{ctx.drawImage(video,Math.floor(slot*fw2),0,Math.ceil(fw2)+1,H)}catch(e){}
-    }
-    if(captured.size<count){
-      requestAnimationFrame(captureFrame);
-    }
-  }
-  // Also do a fast seek pass for any missing frames after 2s
-  setTimeout(()=>{
-    let i=0;
-    function fillMissing(){
-      while(i<count&&captured.has(i))i++;
-      if(i>=count)return;
-      video.currentTime=(i/count)*st.dur;
-      video.addEventListener('seeked',()=>{
-        if(!captured.has(i)){
-          captured.add(i);
-          try{ctx.drawImage(video,Math.floor(i*fw2),0,Math.ceil(fw2)+1,H)}catch(e){}
-        }
-        i++;setTimeout(fillMissing,30);
-      },{once:true});
-    }
-    fillMissing();
-  },2000);
-
-  captureFrame();
-}
-
-// ── TIMELINE ─────────────────────────────────────────────────────────────────
+// ── TIMELINE (no filmstrip, instant) ─────────────────────────────────────────
 function renderTL(){
-  const W=document.getElementById('fw').clientWidth;
-  const lPx=tlL*W,rPx=tlR*W;
-  document.getElementById('ml').style.cssText=`left:0;top:0;bottom:0;width:${lPx}px`;
-  document.getElementById('mr').style.cssText=`right:0;top:0;bottom:0;width:${W-rPx}px`;
-  document.getElementById('tsel').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
-  const s=(tlL*st.dur),e=(tlR*st.dur);
-  st.startTime=parseFloat(s.toFixed(2));
-  st.stickerDur=parseFloat((e-s).toFixed(2));
-  document.getElementById('tl-info').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s · ${st.stickerDur.toFixed(1)}s`;
-  if(video&&video.readyState>=1)video.currentTime=st.startTime;
+  const W=$('tt').clientWidth;
+  const lPx=L*W,rPx=R*W;
+  $('tf').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
+  $('hl').style.left=lPx+'px';
+  $('hr').style.right=(W-rPx)+'px';
+  const s=L*st.dur,e=R*st.dur;
+  st.t0=parseFloat(s.toFixed(2));
+  st.tdur=parseFloat((e-s).toFixed(2));
+  $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s · ${st.tdur.toFixed(1)}s`;
+  if(vid&&vid.readyState>=1)vid.currentTime=st.t0;
 }
 
 function bindTL(){
-  const fw=document.getElementById('fw');
+  const tt=$('tt');
   const MIN=0.5/st.dur,MAX=4/st.dur;
   let drag=null;
   function getN(e){
-    const r=fw.getBoundingClientRect();
+    const r=tt.getBoundingClientRect();
     return Math.max(0,Math.min(1,((e.touches?e.touches[0]:e).clientX-r.left)/r.width));
   }
-  function move(e){
-    if(!drag)return;
-    e.preventDefault();
+  function mv(e){
+    if(!drag)return;e.preventDefault();
     const x=getN(e);
-    if(drag==='L'){tlL=Math.max(0,Math.min(tlR-MIN,x));if(tlR-tlL>MAX)tlR=tlL+MAX;}
-    else{tlR=Math.min(1,Math.max(tlL+MIN,x));if(tlR-tlL>MAX)tlL=tlR-MAX;}
+    if(drag==='L'){L=Math.max(0,Math.min(R-MIN,x));if(R-L>MAX)R=L+MAX;}
+    else{R=Math.min(1,Math.max(L+MIN,x));if(R-L>MAX)L=R-MAX;}
     renderTL();
   }
-  const hl=document.getElementById('hl'),hr=document.getElementById('hr');
-  hl.addEventListener('pointerdown',e=>{drag='L';hl.setPointerCapture(e.pointerId);e.stopPropagation()});
-  hr.addEventListener('pointerdown',e=>{drag='R';hr.setPointerCapture(e.pointerId);e.stopPropagation()});
-  hl.addEventListener('pointermove',move,{passive:false});
-  hr.addEventListener('pointermove',move,{passive:false});
-  hl.addEventListener('pointerup',()=>{drag=null});
-  hr.addEventListener('pointerup',()=>{drag=null});
-  fw.addEventListener('pointerdown',e=>{
-    if(e.target===hl||e.target===hr)return;
+  $('hl').addEventListener('pointerdown',e=>{drag='L';$('hl').setPointerCapture(e.pointerId);e.stopPropagation()});
+  $('hr').addEventListener('pointerdown',e=>{drag='R';$('hr').setPointerCapture(e.pointerId);e.stopPropagation()});
+  $('hl').addEventListener('pointermove',mv,{passive:false});
+  $('hr').addEventListener('pointermove',mv,{passive:false});
+  $('hl').addEventListener('pointerup',()=>drag=null);
+  $('hr').addEventListener('pointerup',()=>drag=null);
+  // tap anywhere on track to jump nearest handle
+  tt.addEventListener('pointerdown',e=>{
+    if(e.target===$('hl')||e.target===$('hr'))return;
     const x=getN(e);
-    drag=Math.abs(x-tlL)<Math.abs(x-tlR)?'L':'R';
-    fw.setPointerCapture(e.pointerId);
+    drag=Math.abs(x-L)<Math.abs(x-R)?'L':'R';
+    tt.setPointerCapture(e.pointerId);
   });
-  fw.addEventListener('pointermove',move,{passive:false});
-  fw.addEventListener('pointerup',()=>{drag=null});
+  tt.addEventListener('pointermove',mv,{passive:false});
+  tt.addEventListener('pointerup',()=>drag=null);
 }
 
 // ── CROP ──────────────────────────────────────────────────────────────────────
-function getVideoRect(){
-  const v=document.getElementById('pv');
-  const cont=document.getElementById('ed-top');
-  const vw=v.videoWidth||9,vh=v.videoHeight||16;
-  const cw=cont.clientWidth,ch=cont.clientHeight;
-  const scale=Math.min(cw/vw,ch/vh);
-  const dw=vw*scale,dh=vh*scale;
-  return{left:(cw-dw)/2,top:(ch-dh)/2,w:dw,h:dh,vw,vh,scale};
+function getVR(){
+  const vw=$('vw');const v=$('vid');
+  const vdw=v.videoWidth||9,vdh=v.videoHeight||16;
+  const cw=vw.clientWidth,ch=vw.clientHeight;
+  const sc=Math.min(cw/vdw,ch/vdh);
+  const dw=vdw*sc,dh=vdh*sc;
+  return{left:(cw-dw)/2,top:(ch-dh)/2,w:dw,h:dh,vw:vdw,vh:vdh,sc};
 }
 
 function initCrop(){
-  vRect=getVideoRect();
-  // Square crop, 85% of min video dimension, centered
-  const s=Math.round(Math.min(vRect.w,vRect.h)*0.85);
-  crop={
-    x:vRect.left+Math.round((vRect.w-s)/2),
-    y:vRect.top+Math.round((vRect.h-s)/2),
-    w:s,h:s
-  };
-  buildCropUI();
-}
-
-function buildCropUI(){
-  const ov=document.getElementById('crop-overlay');
-  const cont=document.getElementById('ed-top');
-  const W=cont.clientWidth,H=cont.clientHeight;
-  ov.innerHTML=`
-    <div class="cshade" id="cs-t" style="pointer-events:none"></div>
-    <div class="cshade" id="cs-b" style="pointer-events:none"></div>
-    <div class="cshade" id="cs-l" style="pointer-events:none"></div>
-    <div class="cshade" id="cs-r" style="pointer-events:none"></div>
-    <div class="cframe" id="cf">
-      <div class="ch tl" data-c="tl"></div>
-      <div class="ch tr" data-c="tr"></div>
-      <div class="ch bl" data-c="bl"></div>
-      <div class="ch br" data-c="br"></div>
-    </div>`;
-  renderCrop();
-  bindCrop();
+  vR=getVR();
+  const s=Math.round(Math.min(vR.w,vR.h)*0.85);
+  cr={x:vR.left+Math.round((vR.w-s)/2),y:vR.top+Math.round((vR.h-s)/2),w:s,h:s};
+  renderCrop();bindCrop();
 }
 
 function renderCrop(){
-  const cont=document.getElementById('ed-top');
-  const W=cont.clientWidth,H=cont.clientHeight;
-  const {x,y,w,h}=crop;
-  document.getElementById('cs-t').style.cssText=`top:0;left:0;right:0;height:${y}px`;
-  document.getElementById('cs-b').style.cssText=`bottom:0;left:0;right:0;height:${H-y-h}px`;
-  document.getElementById('cs-l').style.cssText=`top:${y}px;left:0;width:${x}px;height:${h}px`;
-  document.getElementById('cs-r').style.cssText=`top:${y}px;right:0;width:${W-x-w}px;height:${h}px`;
-  document.getElementById('cf').style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
-  drawPreview();
-}
-
-function drawPreview(){
-  const pv=document.getElementById('crop-preview');
-  const SIZE=100;
-  pv.width=SIZE;pv.height=SIZE;
-  pv.style.width=SIZE+'px';pv.style.height=SIZE+'px';
-  const ctx=pv.getContext('2d');
-  ctx.clearRect(0,0,SIZE,SIZE);
-  if(!video||video.readyState<2)return;
-  vRect=getVideoRect();
-  // Convert screen crop to video coords
-  const sx=Math.max(0,(crop.x-vRect.left)/vRect.scale);
-  const sy=Math.max(0,(crop.y-vRect.top)/vRect.scale);
-  const sw=Math.min(crop.w/vRect.scale, vRect.vw-sx);
-  const sh=Math.min(crop.h/vRect.scale, vRect.vh-sy);
-  ctx.drawImage(video,sx,sy,sw,sh,0,0,SIZE,SIZE);
-}
-
-// Start preview loop
-function startPreviewLoop(){
-  cancelAnimationFrame(rafId);
-  function loop(){drawPreview();rafId=requestAnimationFrame(loop)}
-  loop();
+  const vw=$('vw');
+  const W=vw.clientWidth,H=vw.clientHeight;
+  const {x,y,w,h}=cr;
+  $('st').style.cssText=`top:0;left:0;right:0;height:${y}px`;
+  $('sb').style.cssText=`bottom:0;left:0;right:0;height:${H-y-h}px`;
+  $('sl').style.cssText=`top:${y}px;left:0;width:${x}px;height:${h}px`;
+  $('sr').style.cssText=`top:${y}px;right:0;width:${W-x-w}px;height:${h}px`;
+  $('cf').style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
 }
 
 function bindCrop(){
-  const cf=document.getElementById('cf');
-  const cont=document.getElementById('ed-top');
+  const cf=$('cf');
+  const vw=$('vw');
   let drag=null,ds={};
-
-  function gp(e){
-    const s=e.touches?e.touches[0]:e;
-    return{x:s.clientX,y:s.clientY};
-  }
-
+  function gp(e){const s=e.touches?e.touches[0]:e;return{x:s.clientX,y:s.clientY}}
   cf.addEventListener('pointerdown',e=>{
     drag=e.target.dataset.c||'mv';
-    ds={...gp(e),ox:crop.x,oy:crop.y,ow:crop.w,oh:crop.h};
-    cf.setPointerCapture(e.pointerId);
-    e.preventDefault();e.stopPropagation();
+    ds={...gp(e),ox:cr.x,oy:cr.y,ow:cr.w,oh:cr.h};
+    cf.setPointerCapture(e.pointerId);e.preventDefault();e.stopPropagation();
   });
-
   cf.addEventListener('pointermove',e=>{
-    if(!drag)return;
-    e.preventDefault();
-    const p=gp(e);
-    const dx=p.x-ds.x,dy=p.y-ds.y;
-    const MIN=60;
-    const W=cont.clientWidth,H=cont.clientHeight;
-
+    if(!drag)return;e.preventDefault();
+    const p=gp(e),dx=p.x-ds.x,dy=p.y-ds.y;
+    const W=vw.clientWidth,H=vw.clientHeight,MIN=60;
     if(drag==='mv'){
-      crop.x=Math.max(0,Math.min(W-crop.w,ds.ox+dx));
-      crop.y=Math.max(0,Math.min(H-crop.h,ds.oy+dy));
+      cr.x=Math.max(0,Math.min(W-cr.w,ds.ox+dx));
+      cr.y=Math.max(0,Math.min(H-cr.h,ds.oy+dy));
     } else {
-      // Keep square, expand/shrink based on dominant direction
-      let d;
-      if(drag==='br') d=Math.max(dx,dy);
-      else if(drag==='bl') d=Math.max(-dx,dy);
-      else if(drag==='tr') d=Math.max(dx,-dy);
-      else d=Math.max(-dx,-dy); // tl
-
-      const maxS=drag==='br'?Math.min(W-ds.ox,H-ds.oy):
-                 drag==='bl'?Math.min(ds.ox+ds.ow,H-ds.oy):
-                 drag==='tr'?Math.min(W-ds.ox,ds.oy+ds.oh):
-                             Math.min(ds.ox+ds.ow,ds.oy+ds.oh);
+      let d=drag==='br'?Math.max(dx,dy):drag==='bl'?Math.max(-dx,dy):drag==='tr'?Math.max(dx,-dy):Math.max(-dx,-dy);
+      const maxS=drag==='br'?Math.min(W-ds.ox,H-ds.oy):drag==='bl'?Math.min(ds.ox+ds.ow,H-ds.oy):drag==='tr'?Math.min(W-ds.ox,ds.oy+ds.oh):Math.min(ds.ox+ds.ow,ds.oy+ds.oh);
       const ns=Math.max(MIN,Math.min(ds.ow+d,maxS));
-
-      if(drag==='br'){crop.w=ns;crop.h=ns;}
-      else if(drag==='bl'){crop.x=ds.ox+ds.ow-ns;crop.w=ns;crop.h=ns;}
-      else if(drag==='tr'){crop.y=ds.oy+ds.oh-ns;crop.w=ns;crop.h=ns;}
-      else{crop.x=ds.ox+ds.ow-ns;crop.y=ds.oy+ds.oh-ns;crop.w=ns;crop.h=ns;}
+      if(drag==='br'){cr.w=ns;cr.h=ns;}
+      else if(drag==='bl'){cr.x=ds.ox+ds.ow-ns;cr.w=ns;cr.h=ns;}
+      else if(drag==='tr'){cr.y=ds.oy+ds.oh-ns;cr.w=ns;cr.h=ns;}
+      else{cr.x=ds.ox+ds.ow-ns;cr.y=ds.oy+ds.oh-ns;cr.w=ns;cr.h=ns;}
     }
     renderCrop();
   });
-  cf.addEventListener('pointerup',()=>{drag=null});
+  cf.addEventListener('pointerup',()=>drag=null);
 }
 
 // ── PROCESS ───────────────────────────────────────────────────────────────────
-async function doProcess(){
-  hideErr('e1');
-  vRect=getVideoRect();
-  // Convert screen crop coords to video pixel coords
-  const cropData={
-    x:Math.max(0,Math.round((crop.x-vRect.left)/vRect.scale)),
-    y:Math.max(0,Math.round((crop.y-vRect.top)/vRect.scale)),
-    width:Math.round(crop.w/vRect.scale),
-    height:Math.round(crop.h/vRect.scale),
-    videoWidth:vRect.vw,videoHeight:vRect.vh
+async function proc(){
+  noerr('e1');
+  vR=getVR();
+  const cd={
+    x:Math.max(0,Math.round((cr.x-vR.left)/vR.sc)),
+    y:Math.max(0,Math.round((cr.y-vR.top)/vR.sc)),
+    width:Math.min(Math.round(cr.w/vR.sc),vR.vw),
+    height:Math.min(Math.round(cr.h/vR.sc),vR.vh),
+    videoWidth:vR.vw,videoHeight:vR.vh
   };
-  // Clamp to video bounds
-  cropData.width=Math.min(cropData.width,vRect.vw-cropData.x);
-  cropData.height=Math.min(cropData.height,vRect.vh-cropData.y);
-
-  showLoad('Generando sticker animado...');
+  load('Generando sticker...');
   try{
-    const r=await fetch('/process',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({fileId:st.fileId,startTime:st.startTime,duration:Math.min(st.stickerDur,4),crop:cropData})
-    });
+    const r=await fetch('/process',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileId:st.fid,startTime:st.t0,duration:Math.min(st.tdur,4),crop:cd})});
     if(!r.ok){const e=await r.json();throw new Error(e.error||'Error')}
     const blob=await r.blob();
-    st.blobUrl=URL.createObjectURL(blob);
-    st.sizeKB=Math.round(blob.size/1024);
-    cancelAnimationFrame(rafId);
-    document.getElementById('p1').style.display='none';
-    document.getElementById('p2').style.display='flex';
-    document.getElementById('rv').src=st.blobUrl;
-    document.getElementById('sbadge').textContent=st.sizeKB+'KB';
-    setTimeout(doDownload2,800);
-  }catch(e){showErr('e1',e.message)}
-  finally{hideLoad()}
+    st.blob=URL.createObjectURL(blob);
+    $('p1').style.display='none';
+    $('p2').style.display='flex';
+    $('rv').src=st.blob;
+    $('sb2').textContent=Math.round(blob.size/1024)+'KB';
+    setTimeout(dl2,800);
+  }catch(e){err('e1',e.message)}
+  finally{unload()}
 }
 
-function doDownload2(){
-  if(!st.blobUrl)return;
+function dl2(){
+  if(!st.blob)return;
   const a=document.createElement('a');
-  a.href=st.blobUrl;a.download='sticker.gif';
+  a.href=st.blob;a.download='sticker.gif';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-function goBack(){
-  cancelAnimationFrame(rafId);
-  document.getElementById('p1').style.display='none';
-  document.getElementById('p0').style.display='flex';
-  document.getElementById('p0').style.height='100vh';
-}
-
-function doReset(){
-  document.getElementById('turl').value='';
-  document.getElementById('p2').style.display='none';
-  document.getElementById('p0').style.display='flex';
-  if(st.blobUrl)URL.revokeObjectURL(st.blobUrl);
-  st={fileId:null,dur:10,startTime:0,stickerDur:2,blobUrl:null};
+function back(){$('p1').style.display='none';$('p0').style.display='flex'}
+function reset(){
+  $('url').value='';$('p2').style.display='none';$('p0').style.display='flex';
+  if(st.blob)URL.revokeObjectURL(st.blob);
+  st={fid:null,dur:10,t0:0,tdur:2,blob:null};
 }
 </script>
 </body>
