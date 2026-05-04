@@ -11,7 +11,6 @@
 html,body{height:100%;-webkit-font-smoothing:antialiased}
 body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh}
 
-/* PAGE 0 */
 #p0{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .logo-icon{width:36px;height:36px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px}
@@ -33,19 +32,17 @@ input::placeholder{color:var(--mu)}
 .err{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
 .info{background:var(--s2);border-radius:10px;padding:11px 14px;margin-top:12px;font-size:12px;color:var(--mu);line-height:1.6}
 
-/* PAGE 1 - EDITOR */
+/* EDITOR */
 #p1{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column}
 
-/* Video area - takes remaining space */
+/* Video with crop */
 .vwrap{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
 #vid{max-width:100%;max-height:100%;object-fit:contain;display:block}
-
-/* Crop frame overlay - positioned by JS */
 #cov{position:absolute;inset:0;pointer-events:none;z-index:2}
-.cs{position:absolute;background:rgba(0,0,0,.6);pointer-events:none}
-#cf{position:absolute;border:2.5px solid #fff;pointer-events:all;touch-action:none;cursor:move;z-index:3}
+.cs{position:absolute;background:rgba(0,0,0,0.6);pointer-events:none}
+#cf{position:absolute;border:2.5px solid rgba(255,255,255,0.9);pointer-events:all;touch-action:none;cursor:move;z-index:3}
 #cf::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px) 0 0/33.33% 33.33%,linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px) 0 0/33.33% 33.33%;pointer-events:none}
-.ch{position:absolute;width:24px;height:24px;background:var(--gr);border-radius:4px;pointer-events:all;touch-action:none;z-index:10}
+.ch{position:absolute;width:26px;height:26px;background:var(--gr);border-radius:4px;pointer-events:all;touch-action:none;z-index:10}
 .ch.tl{top:-4px;left:-4px;cursor:nw-resize}
 .ch.tr{top:-4px;right:-4px;cursor:ne-resize}
 .ch.bl{bottom:-4px;left:-4px;cursor:sw-resize}
@@ -53,25 +50,34 @@ input::placeholder{color:var(--mu)}
 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;pointer-events:none;z-index:5;white-space:nowrap}
 .pbtn{position:absolute;top:10px;right:10px;width:36px;height:36px;background:rgba(0,0,0,.6);border-radius:50%;border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;-webkit-tap-highlight-color:transparent}
 
-/* Controls panel */
-.ctrl{flex:0 0 auto;background:var(--sur);padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
-.row{display:flex;justify-content:space-between;align-items:center}
-.slim{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
-.tinfo{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--gr)}
+/* Controls */
+.ctrl{flex:0 0 auto;background:var(--sur);padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px}
+.tl-header{display:flex;justify-content:space-between;align-items:center}
+.tl-lbl{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
+.tl-info{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--gr)}
 
-/* Simple slider range for start/end */
-.tl-wrap{display:flex;flex-direction:column;gap:6px}
-.tl-track{position:relative;height:48px;background:var(--s2);border-radius:8px;touch-action:none;user-select:none;overflow:hidden}
-.tl-fill{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.15);border:2px solid var(--gr)}
-.tl-handle{position:absolute;top:0;bottom:0;width:22px;background:var(--gr);display:flex;align-items:center;justify-content:center;cursor:ew-resize;touch-action:none;z-index:3}
-.tl-handle::after{content:'⋮';color:#000;font-size:14px;font-weight:900}
-.tl-handle.L{left:0;border-radius:6px 0 0 6px}
-.tl-handle.R{right:0;border-radius:0 6px 6px 0}
-.tl-time{position:absolute;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:rgba(255,255,255,.6);pointer-events:none;left:50%;transform:translate(-50%,-50%)}
-.tl-sub{display:flex;justify-content:space-between}
-.tl-sub span{font-size:11px;color:var(--mu)}
-.brow{display:flex;gap:10px}
+/* WhatsApp-style timeline */
+.tl-outer{position:relative;height:60px;border-radius:8px;overflow:hidden;background:#000;touch-action:none;user-select:none}
+/* Filmstrip canvas behind everything */
+#fsc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+/* Dark overlay outside selection */
+.tl-dark{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.6);pointer-events:none;z-index:2}
+/* Yellow/green border around selection like WhatsApp */
+.tl-border{position:absolute;top:0;bottom:0;border:3px solid var(--gr);pointer-events:none;z-index:3;border-radius:2px}
+/* Left handle */
+.tl-hl{position:absolute;top:0;bottom:0;width:20px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:4px 0 0 4px}
+.tl-hl::after{content:'❮';color:#000;font-size:11px;font-weight:900}
+/* Right handle */
+.tl-hr{position:absolute;top:0;bottom:0;width:20px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:0 4px 4px 0}
+.tl-hr::after{content:'❯';color:#000;font-size:11px;font-weight:900}
+/* Time labels */
+.tl-times{display:flex;justify-content:space-between;margin-top:4px}
+.tl-times span{font-size:11px;color:var(--mu)}
+/* Duration badge */
+.tl-dur{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:var(--gr);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:2px 8px;border-radius:10px;pointer-events:none;z-index:5;white-space:nowrap}
+
 .errb{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:11px 14px;color:#f87171;font-size:13px;display:none}
+.brow{display:flex;gap:10px}
 
 /* PAGE 2 */
 #p2{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;background:var(--bg)}
@@ -86,7 +92,6 @@ input::placeholder{color:var(--mu)}
 .ist p{color:#b0b0c4;font-size:13px;line-height:1.5}
 .ist p strong{color:var(--tx);font-weight:500}
 
-/* Loader */
 #lov{position:fixed;inset:0;background:rgba(7,7,9,.92);backdrop-filter:blur(8px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #lov.on{display:flex}
 .ring{width:48px;height:48px;border:3px solid rgba(34,197,94,.15);border-top-color:var(--gr);border-radius:50%;animation:sp .8s linear infinite}
@@ -112,7 +117,7 @@ input::placeholder{color:var(--mu)}
   </div>
 </div>
 
-<!-- PAGE 1 - EDITOR -->
+<!-- PAGE 1 -->
 <div id="p1">
   <div class="vwrap" id="vw">
     <video id="vid" muted playsinline crossorigin="anonymous" loop></video>
@@ -133,19 +138,23 @@ input::placeholder{color:var(--mu)}
   </div>
 
   <div class="ctrl">
-    <div class="tl-wrap">
-      <div class="row">
-        <span class="slim">Clip</span>
-        <span class="tinfo" id="tinfo">0.0s → 2.0s · 2.0s</span>
-      </div>
-      <div class="tl-track" id="tt">
-        <div class="tl-fill" id="tf"></div>
-        <div class="tl-handle L" id="hl"></div>
-        <div class="tl-handle R" id="hr"></div>
-        <span class="tl-time" id="tlt"></span>
-      </div>
-      <div class="tl-sub"><span>0s</span><span id="te">0s</span></div>
+    <div class="tl-header">
+      <span class="tl-lbl">Clip</span>
+      <span class="tl-info" id="tinfo">0.0s → 2.0s</span>
     </div>
+
+    <!-- WhatsApp-style timeline -->
+    <div class="tl-outer" id="tlo">
+      <canvas id="fsc"></canvas>
+      <div class="tl-dark" id="tdl"></div>
+      <div class="tl-dark" id="tdr"></div>
+      <div class="tl-border" id="tbd"></div>
+      <div class="tl-hl" id="thl"></div>
+      <div class="tl-hr" id="thr"></div>
+      <div class="tl-dur" id="tdur">2.0s</div>
+    </div>
+    <div class="tl-times"><span>0s</span><span id="te">0s</span></div>
+
     <div class="errb" id="e1"></div>
     <div class="brow">
       <button class="btn b-gh" onclick="back()">← Atrás</button>
@@ -157,7 +166,7 @@ input::placeholder{color:var(--mu)}
 <!-- PAGE 2 -->
 <div id="p2">
   <div class="logo" style="margin-bottom:4px"><div class="logo-icon">🎯</div><span class="logo-txt">Sticker<span>Drop</span></span></div>
-  <p class="tag">¡Listo! 🎉</p>
+  <p class="tag" style="margin-bottom:16px">¡Listo! 🎉</p>
   <div class="sframe"><img id="rv" src="" alt=""/><span class="sba" id="sb2"></span></div>
   <button class="b-dl" onclick="dl2()">⬇️ Descargar Sticker (.gif)</button>
   <div class="inst">
@@ -170,16 +179,17 @@ input::placeholder{color:var(--mu)}
 </div>
 
 <script>
-let st={fid:null,dur:10,t0:0,tdur:2,blob:null};
-let vid,vR={},cr={x:0,y:0,w:0,h:0},L=0,R=0.2;
-
 const $=id=>document.getElementById(id);
+let st={fid:null,dur:10,t0:0,tdur:2,blob:null};
+let vid,vR={},cr={x:0,y:0,w:0,h:0};
+let L=0,R=0.2; // normalized 0-1
+
 function load(t){$('ltx').textContent=t;$('lov').classList.add('on')}
 function unload(){$('lov').classList.remove('on')}
 function err(id,m){const e=$(id);e.textContent=m;e.style.display='block'}
 function noerr(id){$(id).style.display='none'}
 
-// ── DOWNLOAD ──────────────────────────────────────────────────────────────────
+// DOWNLOAD
 $('url').addEventListener('keydown',e=>{if(e.key==='Enter')dl()});
 async function dl(){
   const url=$('url').value.trim();
@@ -194,7 +204,7 @@ async function dl(){
   }catch(e){err('e0',e.message);unload()}
 }
 
-// ── EDITOR ────────────────────────────────────────────────────────────────────
+// EDITOR
 function startEditor(){
   $('p0').style.display='none';
   $('p1').style.display='flex';
@@ -203,10 +213,13 @@ function startEditor(){
   vid.addEventListener('loadeddata',()=>{
     vid.play().catch(()=>{});
     upPb();
-    L=0;R=Math.min(1,2/st.dur);
+    L=0; R=Math.min(1,2/st.dur);
     $('te').textContent=st.dur.toFixed(1)+'s';
-    renderTL();bindTL();
+    renderTL();
+    bindTL();
     requestAnimationFrame(()=>requestAnimationFrame(initCrop));
+    // Build filmstrip in background - non-blocking
+    buildFilmstrip();
   },{once:true});
   vid.addEventListener('play',upPb);
   vid.addEventListener('pause',upPb);
@@ -215,59 +228,111 @@ function startEditor(){
 function tp(){vid.paused?vid.play().catch(()=>{}):vid.pause()}
 function upPb(){$('pb').textContent=vid.paused?'▶':'⏸'}
 
-// ── TIMELINE (no filmstrip, instant) ─────────────────────────────────────────
+// FILMSTRIP - builds in background without blocking
+function buildFilmstrip(){
+  const tlo=$('tlo');
+  const cv=$('fsc');
+  const W=tlo.clientWidth, H=60;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H);
+
+  const FRAMES=Math.ceil(W/H); // number of frames to capture
+  const fw=W/FRAMES;
+  let i=0;
+  const wasPlaying=!vid.paused;
+
+  function captureNext(){
+    if(i>=FRAMES){
+      // Done - resume video at correct position
+      vid.currentTime=st.t0;
+      if(wasPlaying) vid.play().catch(()=>{});
+      return;
+    }
+    const t=(i/FRAMES)*st.dur;
+    const onSeeked=()=>{
+      try{
+        ctx.drawImage(vid, Math.floor(i*fw), 0, Math.ceil(fw)+1, H);
+        // Draw subtle separator
+        ctx.fillStyle='rgba(0,0,0,0.3)';
+        ctx.fillRect(Math.floor(i*fw), 0, 1, H);
+      }catch(e){}
+      i++;
+      // Use setTimeout to yield to main thread between frames
+      setTimeout(captureNext, 40);
+    };
+    vid.addEventListener('seeked', onSeeked, {once:true});
+    vid.currentTime=t;
+  }
+
+  // Start after a small delay so editor feels instant
+  vid.pause();
+  setTimeout(captureNext, 200);
+}
+
+// TIMELINE
 function renderTL(){
-  const W=$('tt').clientWidth;
-  const lPx=L*W,rPx=R*W;
-  $('tf').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
-  $('hl').style.left=lPx+'px';
-  $('hr').style.right=(W-rPx)+'px';
-  const s=L*st.dur,e=R*st.dur;
+  const W=$('tlo').clientWidth;
+  const lPx=L*W, rPx=R*W;
+  // Dark overlays
+  $('tdl').style.cssText=`left:0;top:0;bottom:0;width:${lPx}px`;
+  $('tdr').style.cssText=`right:0;top:0;bottom:0;width:${W-rPx}px`;
+  // Green border
+  $('tbd').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
+  // Handles
+  $('thl').style.cssText=`left:${lPx}px;top:0;bottom:0;width:20px`;
+  $('thr').style.cssText=`left:${rPx-20}px;top:0;bottom:0;width:20px`;
+  // Info
+  const s=L*st.dur, e=R*st.dur, d=e-s;
   st.t0=parseFloat(s.toFixed(2));
-  st.tdur=parseFloat((e-s).toFixed(2));
-  $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s · ${st.tdur.toFixed(1)}s`;
-  if(vid&&vid.readyState>=1)vid.currentTime=st.t0;
+  st.tdur=parseFloat(d.toFixed(2));
+  $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s`;
+  $('tdur').textContent=d.toFixed(1)+'s';
+  if(vid&&vid.readyState>=1) vid.currentTime=st.t0;
 }
 
 function bindTL(){
-  const tt=$('tt');
-  const MIN=0.5/st.dur,MAX=4/st.dur;
+  const tlo=$('tlo');
+  const MAX=10/st.dur; // max 10s
+  const MIN=0.5/st.dur; // min 0.5s
   let drag=null;
+
   function getN(e){
-    const r=tt.getBoundingClientRect();
-    return Math.max(0,Math.min(1,((e.touches?e.touches[0]:e).clientX-r.left)/r.width));
+    const r=tlo.getBoundingClientRect();
+    const cx=(e.touches?e.touches[0]:e).clientX;
+    return Math.max(0,Math.min(1,(cx-r.left)/r.width));
   }
+
   function mv(e){
-    if(!drag)return;e.preventDefault();
+    if(!drag)return;
+    e.preventDefault();
     const x=getN(e);
-    if(drag==='L'){L=Math.max(0,Math.min(R-MIN,x));if(R-L>MAX)R=L+MAX;}
-    else{R=Math.min(1,Math.max(L+MIN,x));if(R-L>MAX)L=R-MAX;}
+    if(drag==='L'){
+      L=Math.max(0,Math.min(R-MIN,x));
+      if(R-L>MAX) R=L+MAX;
+    } else {
+      R=Math.min(1,Math.max(L+MIN,x));
+      if(R-L>MAX) L=R-MAX;
+    }
     renderTL();
   }
-  $('hl').addEventListener('pointerdown',e=>{drag='L';$('hl').setPointerCapture(e.pointerId);e.stopPropagation()});
-  $('hr').addEventListener('pointerdown',e=>{drag='R';$('hr').setPointerCapture(e.pointerId);e.stopPropagation()});
-  $('hl').addEventListener('pointermove',mv,{passive:false});
-  $('hr').addEventListener('pointermove',mv,{passive:false});
-  $('hl').addEventListener('pointerup',()=>drag=null);
-  $('hr').addEventListener('pointerup',()=>drag=null);
-  // tap anywhere on track to jump nearest handle
-  tt.addEventListener('pointerdown',e=>{
-    if(e.target===$('hl')||e.target===$('hr'))return;
-    const x=getN(e);
-    drag=Math.abs(x-L)<Math.abs(x-R)?'L':'R';
-    tt.setPointerCapture(e.pointerId);
-  });
-  tt.addEventListener('pointermove',mv,{passive:false});
-  tt.addEventListener('pointerup',()=>drag=null);
+
+  const hl=$('thl'), hr=$('thr');
+  hl.addEventListener('pointerdown',e=>{drag='L';hl.setPointerCapture(e.pointerId);e.stopPropagation()});
+  hr.addEventListener('pointerdown',e=>{drag='R';hr.setPointerCapture(e.pointerId);e.stopPropagation()});
+  hl.addEventListener('pointermove',mv,{passive:false});
+  hr.addEventListener('pointermove',mv,{passive:false});
+  hl.addEventListener('pointerup',()=>drag=null);
+  hr.addEventListener('pointerup',()=>drag=null);
 }
 
-// ── CROP ──────────────────────────────────────────────────────────────────────
+// CROP
 function getVR(){
-  const vw=$('vw');const v=$('vid');
-  const vdw=v.videoWidth||9,vdh=v.videoHeight||16;
-  const cw=vw.clientWidth,ch=vw.clientHeight;
+  const vw=$('vw'), v=$('vid');
+  const vdw=v.videoWidth||9, vdh=v.videoHeight||16;
+  const cw=vw.clientWidth, ch=vw.clientHeight;
   const sc=Math.min(cw/vdw,ch/vdh);
-  const dw=vdw*sc,dh=vdh*sc;
+  const dw=vdw*sc, dh=vdh*sc;
   return{left:(cw-dw)/2,top:(ch-dh)/2,w:dw,h:dh,vw:vdw,vh:vdh,sc};
 }
 
@@ -280,7 +345,7 @@ function initCrop(){
 
 function renderCrop(){
   const vw=$('vw');
-  const W=vw.clientWidth,H=vw.clientHeight;
+  const W=vw.clientWidth, H=vw.clientHeight;
   const {x,y,w,h}=cr;
   $('st').style.cssText=`top:0;left:0;right:0;height:${y}px`;
   $('sb').style.cssText=`bottom:0;left:0;right:0;height:${H-y-h}px`;
@@ -290,9 +355,8 @@ function renderCrop(){
 }
 
 function bindCrop(){
-  const cf=$('cf');
-  const vw=$('vw');
-  let drag=null,ds={};
+  const cf=$('cf'), vw=$('vw');
+  let drag=null, ds={};
   function gp(e){const s=e.touches?e.touches[0]:e;return{x:s.clientX,y:s.clientY}}
   cf.addEventListener('pointerdown',e=>{
     drag=e.target.dataset.c||'mv';
@@ -320,7 +384,7 @@ function bindCrop(){
   cf.addEventListener('pointerup',()=>drag=null);
 }
 
-// ── PROCESS ───────────────────────────────────────────────────────────────────
+// PROCESS
 async function proc(){
   noerr('e1');
   vR=getVR();
@@ -333,7 +397,7 @@ async function proc(){
   };
   load('Generando sticker...');
   try{
-    const r=await fetch('/process',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileId:st.fid,startTime:st.t0,duration:Math.min(st.tdur,4),crop:cd})});
+    const r=await fetch('/process',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileId:st.fid,startTime:st.t0,duration:Math.min(st.tdur,10),crop:cd})});
     if(!r.ok){const e=await r.json();throw new Error(e.error||'Error')}
     const blob=await r.blob();
     st.blob=URL.createObjectURL(blob);

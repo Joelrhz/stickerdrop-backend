@@ -103,7 +103,7 @@ app.post('/process', async (req, res) => {
 
   const outputId = uuidv4();
   const gifPath = path.join(TMP_DIR, `${outputId}.gif`);
-  const dur = Math.min(parseFloat(duration), 4);
+  const dur = Math.min(parseFloat(duration), 10);
   const start = Math.max(0, parseFloat(startTime));
   const cx = Math.max(0, Math.round(crop.x));
   const cy = Math.max(0, Math.round(crop.y));
