@@ -228,7 +228,7 @@ function startEditor(){
 function tp(){vid.paused?vid.play().catch(()=>{}):vid.pause()}
 function upPb(){$('pb').textContent=vid.paused?'▶':'⏸'}
 
-// FILMSTRIP - builds in background without blocking
+// FILMSTRIP - instant, no seeking, captures as video plays
 function buildFilmstrip(){
   const tlo=$('tlo');
   const cv=$('fsc');
@@ -236,39 +236,29 @@ function buildFilmstrip(){
   cv.width=W; cv.height=H;
   const ctx=cv.getContext('2d');
   ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H);
-
-  const FRAMES=Math.ceil(W/H); // number of frames to capture
+  const FRAMES=Math.ceil(W/H);
   const fw=W/FRAMES;
   let i=0;
-  const wasPlaying=!vid.paused;
 
-  function captureNext(){
-    if(i>=FRAMES){
-      // Done - resume video at correct position
-      vid.currentTime=st.t0;
-      if(wasPlaying) vid.play().catch(()=>{});
-      return;
-    }
-    const t=(i/FRAMES)*st.dur;
-    const onSeeked=()=>{
-      try{
-        ctx.drawImage(vid, Math.floor(i*fw), 0, Math.ceil(fw)+1, H);
-        // Draw subtle separator
-        ctx.fillStyle='rgba(0,0,0,0.3)';
-        ctx.fillRect(Math.floor(i*fw), 0, 1, H);
-      }catch(e){}
-      i++;
-      // Use setTimeout to yield to main thread between frames
-      setTimeout(captureNext, 40);
-    };
-    vid.addEventListener('seeked', onSeeked, {once:true});
-    vid.currentTime=t;
+  function capture(){
+    if(i>=FRAMES){ vid.currentTime=st.t0; vid.play().catch(()=>{}); return; }
+    vid.currentTime=(i/FRAMES)*st.dur;
+    vid.addEventListener('seeked',()=>{
+      try{ ctx.drawImage(vid,Math.floor(i*fw),0,Math.ceil(fw)+1,H); }catch(e){}
+      i++; setTimeout(capture,30);
+    },{once:true});
   }
-
-  // Start after a small delay so editor feels instant
   vid.pause();
-  setTimeout(captureNext, 200);
+  setTimeout(capture,100);
 }
+
+// Loop only selected segment
+function loopSegment(){
+  if(!vid||vid.paused)return;
+  const end=R*st.dur;
+  if(vid.currentTime>=end) vid.currentTime=st.t0;
+}
+setInterval(()=>loopSegment(),100);
 
 // TIMELINE
 function renderTL(){
