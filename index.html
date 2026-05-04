@@ -211,16 +211,19 @@ function startEditor(){
   vid=$('vid');
   vid.src=`/files/${st.fid}.mp4`;
   vid.addEventListener('loadeddata',()=>{
-    vid.play().catch(()=>{});
-    upPb();
     L=0; R=Math.min(1,2/st.dur);
     $('te').textContent=st.dur.toFixed(1)+'s';
     renderTL();
     bindTL();
     requestAnimationFrame(()=>requestAnimationFrame(initCrop));
-    // Build filmstrip in background - non-blocking
     buildFilmstrip();
   },{once:true});
+  // Loop only selected segment
+  vid.addEventListener('timeupdate',()=>{
+    if(!vid.paused && vid.currentTime >= R*st.dur){
+      vid.currentTime=L*st.dur;
+    }
+  });
   vid.addEventListener('play',upPb);
   vid.addEventListener('pause',upPb);
 }
@@ -228,7 +231,7 @@ function startEditor(){
 function tp(){vid.paused?vid.play().catch(()=>{}):vid.pause()}
 function upPb(){$('pb').textContent=vid.paused?'▶':'⏸'}
 
-// FILMSTRIP - instant, no seeking, captures as video plays
+// FILMSTRIP
 function buildFilmstrip(){
   const tlo=$('tlo');
   const cv=$('fsc');
@@ -241,7 +244,7 @@ function buildFilmstrip(){
   let i=0;
 
   function capture(){
-    if(i>=FRAMES){ vid.currentTime=st.t0; vid.play().catch(()=>{}); return; }
+    if(i>=FRAMES){ vid.currentTime=L*st.dur; vid.play().catch(()=>{}); upPb(); return; }
     vid.currentTime=(i/FRAMES)*st.dur;
     vid.addEventListener('seeked',()=>{
       try{ ctx.drawImage(vid,Math.floor(i*fw),0,Math.ceil(fw)+1,H); }catch(e){}
@@ -251,14 +254,6 @@ function buildFilmstrip(){
   vid.pause();
   setTimeout(capture,100);
 }
-
-// Loop only selected segment
-function loopSegment(){
-  if(!vid||vid.paused)return;
-  const end=R*st.dur;
-  if(vid.currentTime>=end) vid.currentTime=st.t0;
-}
-setInterval(()=>loopSegment(),100);
 
 // TIMELINE
 function renderTL(){
@@ -278,6 +273,7 @@ function renderTL(){
   st.tdur=parseFloat(d.toFixed(2));
   $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s`;
   $('tdur').textContent=d.toFixed(1)+'s';
+  // Seek video to start of selection so user sees selected segment
   if(vid&&vid.readyState>=1) vid.currentTime=st.t0;
 }
 
