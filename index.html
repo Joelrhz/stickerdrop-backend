@@ -32,10 +32,7 @@ input::placeholder{color:var(--mu)}
 .err{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 14px;color:#f87171;font-size:13px;margin-top:10px;display:none}
 .info{background:var(--s2);border-radius:10px;padding:11px 14px;margin-top:12px;font-size:12px;color:var(--mu);line-height:1.6}
 
-/* EDITOR */
 #p1{position:fixed;inset:0;z-index:50;background:#000;display:none;flex-direction:column}
-
-/* Video with crop */
 .vwrap{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
 #vid{max-width:100%;max-height:100%;object-fit:contain;display:block}
 #cov{position:absolute;inset:0;pointer-events:none;z-index:2}
@@ -50,36 +47,28 @@ input::placeholder{color:var(--mu)}
 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;pointer-events:none;z-index:5;white-space:nowrap}
 .pbtn{position:absolute;top:10px;right:10px;width:36px;height:36px;background:rgba(0,0,0,.6);border-radius:50%;border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;-webkit-tap-highlight-color:transparent}
 
-/* Controls */
 .ctrl{flex:0 0 auto;background:var(--sur);padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px}
 .tl-header{display:flex;justify-content:space-between;align-items:center}
 .tl-lbl{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
 .tl-info{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--gr)}
 
-/* WhatsApp-style timeline */
-.tl-outer{position:relative;height:60px;border-radius:8px;overflow:hidden;background:#000;touch-action:none;user-select:none}
-/* Filmstrip canvas behind everything */
+/* Timeline */
+.tl-outer{position:relative;height:60px;border-radius:8px;overflow:hidden;background:#111;touch-action:none;user-select:none}
 #fsc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
-/* Dark overlay outside selection */
-.tl-dark{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.6);pointer-events:none;z-index:2}
-/* Yellow/green border around selection like WhatsApp */
-.tl-border{position:absolute;top:0;bottom:0;border:3px solid var(--gr);pointer-events:none;z-index:3;border-radius:2px}
-/* Left handle */
-.tl-hl{position:absolute;top:0;bottom:0;width:20px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:4px 0 0 4px}
+.tl-dark{position:absolute;top:0;bottom:0;background:rgba(0,0,0,0.65);pointer-events:none;z-index:2}
+.tl-sel{position:absolute;top:0;bottom:0;border-top:3px solid var(--gr);border-bottom:3px solid var(--gr);pointer-events:all;cursor:grab;z-index:3;touch-action:none}
+.tl-sel:active{cursor:grabbing}
+.tl-hl{position:absolute;top:0;bottom:0;width:22px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:4px 0 0 4px;left:0}
 .tl-hl::after{content:'❮';color:#000;font-size:11px;font-weight:900}
-/* Right handle */
-.tl-hr{position:absolute;top:0;bottom:0;width:20px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:0 4px 4px 0}
+.tl-hr{position:absolute;top:0;bottom:0;width:22px;background:var(--gr);display:flex;align-items:center;justify-content:center;touch-action:none;z-index:4;cursor:ew-resize;border-radius:0 4px 4px 0;right:0}
 .tl-hr::after{content:'❯';color:#000;font-size:11px;font-weight:900}
-/* Time labels */
+.tl-dur{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:var(--gr);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:2px 8px;border-radius:10px;pointer-events:none;z-index:5;white-space:nowrap}
 .tl-times{display:flex;justify-content:space-between;margin-top:4px}
 .tl-times span{font-size:11px;color:var(--mu)}
-/* Duration badge */
-.tl-dur{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:var(--gr);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:2px 8px;border-radius:10px;pointer-events:none;z-index:5;white-space:nowrap}
 
 .errb{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:11px 14px;color:#f87171;font-size:13px;display:none}
 .brow{display:flex;gap:10px}
 
-/* PAGE 2 */
 #p2{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;background:var(--bg)}
 .sframe{position:relative;border-radius:14px;overflow:hidden;border:2px solid rgba(34,197,94,.3);box-shadow:0 0 36px rgba(34,197,94,.1);margin-bottom:18px}
 #rv{display:block;width:200px;height:200px;object-fit:cover}
@@ -102,7 +91,6 @@ input::placeholder{color:var(--mu)}
 <body>
 <div id="lov"><div class="ring"></div><p class="ltx" id="ltx">Procesando...</p></div>
 
-<!-- PAGE 0 -->
 <div id="p0">
   <div class="logo"><div class="logo-icon">🎯</div><span class="logo-txt">Sticker<span>Drop</span></span></div>
   <p class="tag">TikTok → WhatsApp · Zero hassle</p>
@@ -117,15 +105,14 @@ input::placeholder{color:var(--mu)}
   </div>
 </div>
 
-<!-- PAGE 1 -->
 <div id="p1">
   <div class="vwrap" id="vw">
-    <video id="vid" muted playsinline crossorigin="anonymous" loop></video>
+    <video id="vid" muted playsinline crossorigin="anonymous"></video>
     <div id="cov">
-      <div class="cs" id="st"></div>
-      <div class="cs" id="sb"></div>
-      <div class="cs" id="sl"></div>
-      <div class="cs" id="sr"></div>
+      <div class="cs" id="cst"></div>
+      <div class="cs" id="csb"></div>
+      <div class="cs" id="csl"></div>
+      <div class="cs" id="csr"></div>
       <div id="cf">
         <div class="ch tl" data-c="tl"></div>
         <div class="ch tr" data-c="tr"></div>
@@ -134,27 +121,25 @@ input::placeholder{color:var(--mu)}
       </div>
     </div>
     <div class="hint">Arrastra esquinas verdes para recortar</div>
-    <button class="pbtn" id="pb" onclick="tp()">⏸</button>
+    <button class="pbtn" id="pb" onclick="tp()">▶</button>
   </div>
 
   <div class="ctrl">
     <div class="tl-header">
       <span class="tl-lbl">Clip</span>
-      <span class="tl-info" id="tinfo">0.0s → 2.0s</span>
+      <span class="tl-info" id="tinfo">0.0s → 2.0s · 2.0s</span>
     </div>
-
-    <!-- WhatsApp-style timeline -->
     <div class="tl-outer" id="tlo">
       <canvas id="fsc"></canvas>
       <div class="tl-dark" id="tdl"></div>
       <div class="tl-dark" id="tdr"></div>
-      <div class="tl-border" id="tbd"></div>
-      <div class="tl-hl" id="thl"></div>
-      <div class="tl-hr" id="thr"></div>
-      <div class="tl-dur" id="tdur">2.0s</div>
+      <div class="tl-sel" id="tsel">
+        <div class="tl-hl" id="thl"></div>
+        <div class="tl-hr" id="thr"></div>
+        <div class="tl-dur" id="tdur">2.0s</div>
+      </div>
     </div>
     <div class="tl-times"><span>0s</span><span id="te">0s</span></div>
-
     <div class="errb" id="e1"></div>
     <div class="brow">
       <button class="btn b-gh" onclick="back()">← Atrás</button>
@@ -163,7 +148,6 @@ input::placeholder{color:var(--mu)}
   </div>
 </div>
 
-<!-- PAGE 2 -->
 <div id="p2">
   <div class="logo" style="margin-bottom:4px"><div class="logo-icon">🎯</div><span class="logo-txt">Sticker<span>Drop</span></span></div>
   <p class="tag" style="margin-bottom:16px">¡Listo! 🎉</p>
@@ -182,14 +166,13 @@ input::placeholder{color:var(--mu)}
 const $=id=>document.getElementById(id);
 let st={fid:null,dur:10,t0:0,tdur:2,blob:null};
 let vid,vR={},cr={x:0,y:0,w:0,h:0};
-let L=0,R=0.2; // normalized 0-1
+let L=0,R=0.2;
 
 function load(t){$('ltx').textContent=t;$('lov').classList.add('on')}
 function unload(){$('lov').classList.remove('on')}
 function err(id,m){const e=$(id);e.textContent=m;e.style.display='block'}
 function noerr(id){$(id).style.display='none'}
 
-// DOWNLOAD
 $('url').addEventListener('keydown',e=>{if(e.key==='Enter')dl()});
 async function dl(){
   const url=$('url').value.trim();
@@ -204,89 +187,84 @@ async function dl(){
   }catch(e){err('e0',e.message);unload()}
 }
 
-// EDITOR
 function startEditor(){
   $('p0').style.display='none';
   $('p1').style.display='flex';
   vid=$('vid');
   vid.src=`/files/${st.fid}.mp4`;
   vid.addEventListener('loadeddata',()=>{
-    L=0; R=Math.min(1,2/st.dur);
+    L=0;R=Math.min(1,2/st.dur);
     $('te').textContent=st.dur.toFixed(1)+'s';
-    renderTL();
-    bindTL();
+    renderTL();bindTL();
     requestAnimationFrame(()=>requestAnimationFrame(initCrop));
-    buildFilmstrip();
+    // Load server-generated thumbnails
+    loadThumbnails();
   },{once:true});
-  // Loop only selected segment
+  // Loop selected segment only
   vid.addEventListener('timeupdate',()=>{
-    if(!vid.paused && vid.currentTime >= R*st.dur){
-      vid.currentTime=L*st.dur;
-    }
+    if(!vid.paused&&vid.currentTime>=R*st.dur) vid.currentTime=L*st.dur;
   });
-  vid.addEventListener('play',upPb);
-  vid.addEventListener('pause',upPb);
+  vid.addEventListener('play',()=>{$('pb').textContent='⏸'});
+  vid.addEventListener('pause',()=>{$('pb').textContent='▶'});
 }
 
 function tp(){vid.paused?vid.play().catch(()=>{}):vid.pause()}
-function upPb(){$('pb').textContent=vid.paused?'▶':'⏸'}
 
-// FILMSTRIP
-function buildFilmstrip(){
+// Load thumbnails generated by server - instant, no seek
+async function loadThumbnails(){
   const tlo=$('tlo');
   const cv=$('fsc');
-  const W=tlo.clientWidth, H=60;
-  cv.width=W; cv.height=H;
+  const W=tlo.clientWidth,H=60;
+  cv.width=W;cv.height=H;
   const ctx=cv.getContext('2d');
-  ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H);
-  const FRAMES=Math.ceil(W/H);
-  const fw=W/FRAMES;
-  let i=0;
-
-  function capture(){
-    if(i>=FRAMES){ vid.currentTime=L*st.dur; vid.play().catch(()=>{}); upPb(); return; }
-    vid.currentTime=(i/FRAMES)*st.dur;
-    vid.addEventListener('seeked',()=>{
-      try{ ctx.drawImage(vid,Math.floor(i*fw),0,Math.ceil(fw)+1,H); }catch(e){}
-      i++; setTimeout(capture,30);
-    },{once:true});
+  // Dark placeholder while loading
+  ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,W,H);
+  
+  const COUNT=Math.ceil(W/H);
+  try{
+    const r=await fetch('/thumbs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileId:st.fid,count:COUNT})});
+    const d=await r.json();
+    if(!d.thumbs)return;
+    const fw=W/COUNT;
+    for(let i=0;i<d.thumbs.length;i++){
+      const img=new Image();
+      img.onload=()=>{ctx.drawImage(img,Math.floor(i*fw),0,Math.ceil(fw)+1,H)};
+      img.src=d.thumbs[i];
+    }
+  }catch(e){
+    // Fallback: gradient
+    const g=ctx.createLinearGradient(0,0,W,0);
+    g.addColorStop(0,'#1a2a1a');g.addColorStop(.5,'#0d1a0d');g.addColorStop(1,'#1a2a1a');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   }
-  vid.pause();
-  setTimeout(capture,100);
+  // Start playing selected segment after thumbnails
+  vid.currentTime=L*st.dur;
+  vid.play().catch(()=>{});
 }
 
-// TIMELINE
 function renderTL(){
   const W=$('tlo').clientWidth;
-  const lPx=L*W, rPx=R*W;
-  // Dark overlays
+  const lPx=L*W,rPx=R*W;
   $('tdl').style.cssText=`left:0;top:0;bottom:0;width:${lPx}px`;
   $('tdr').style.cssText=`right:0;top:0;bottom:0;width:${W-rPx}px`;
-  // Green border
-  $('tbd').style.cssText=`left:${lPx}px;right:${W-rPx}px`;
-  // Handles
-  $('thl').style.cssText=`left:${lPx}px;top:0;bottom:0;width:20px`;
-  $('thr').style.cssText=`left:${rPx-20}px;top:0;bottom:0;width:20px`;
-  // Info
-  const s=L*st.dur, e=R*st.dur, d=e-s;
+  $('tsel').style.cssText=`left:${lPx}px;width:${rPx-lPx}px`;
+  const s=L*st.dur,e=R*st.dur,d=e-s;
   st.t0=parseFloat(s.toFixed(2));
   st.tdur=parseFloat(d.toFixed(2));
-  $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s`;
+  $('tinfo').textContent=`${s.toFixed(1)}s → ${e.toFixed(1)}s · ${d.toFixed(1)}s`;
   $('tdur').textContent=d.toFixed(1)+'s';
-  // Seek video to start of selection so user sees selected segment
   if(vid&&vid.readyState>=1) vid.currentTime=st.t0;
 }
 
 function bindTL(){
   const tlo=$('tlo');
-  const MAX=10/st.dur; // max 10s
-  const MIN=0.5/st.dur; // min 0.5s
-  let drag=null;
+  const sel=$('tsel');
+  const MAX=10/st.dur,MIN=0.5/st.dur;
+  let drag=null,startX=0,startL=0,startR=0;
 
   function getN(e){
     const r=tlo.getBoundingClientRect();
-    const cx=(e.touches?e.touches[0]:e).clientX;
-    return Math.max(0,Math.min(1,(cx-r.left)/r.width));
+    return Math.max(0,Math.min(1,((e.touches?e.touches[0]:e).clientX-r.left)/r.width));
   }
 
   function mv(e){
@@ -295,30 +273,51 @@ function bindTL(){
     const x=getN(e);
     if(drag==='L'){
       L=Math.max(0,Math.min(R-MIN,x));
-      if(R-L>MAX) R=L+MAX;
-    } else {
+      if(R-L>MAX)R=L+MAX;
+    } else if(drag==='R'){
       R=Math.min(1,Math.max(L+MIN,x));
-      if(R-L>MAX) L=R-MAX;
+      if(R-L>MAX)L=R-MAX;
+    } else if(drag==='M'){
+      // Move whole selection
+      const dx=x-startX;
+      const dur=startR-startL;
+      L=Math.max(0,Math.min(1-dur,startL+dx));
+      R=L+dur;
     }
     renderTL();
   }
 
-  const hl=$('thl'), hr=$('thr');
-  hl.addEventListener('pointerdown',e=>{drag='L';hl.setPointerCapture(e.pointerId);e.stopPropagation()});
-  hr.addEventListener('pointerdown',e=>{drag='R';hr.setPointerCapture(e.pointerId);e.stopPropagation()});
-  hl.addEventListener('pointermove',mv,{passive:false});
-  hr.addEventListener('pointermove',mv,{passive:false});
-  hl.addEventListener('pointerup',()=>drag=null);
-  hr.addEventListener('pointerup',()=>drag=null);
+  // Left handle
+  $('thl').addEventListener('pointerdown',e=>{
+    drag='L';$('thl').setPointerCapture(e.pointerId);e.stopPropagation();
+  });
+  $('thl').addEventListener('pointermove',mv,{passive:false});
+  $('thl').addEventListener('pointerup',()=>drag=null);
+
+  // Right handle
+  $('thr').addEventListener('pointerdown',e=>{
+    drag='R';$('thr').setPointerCapture(e.pointerId);e.stopPropagation();
+  });
+  $('thr').addEventListener('pointermove',mv,{passive:false});
+  $('thr').addEventListener('pointerup',()=>drag=null);
+
+  // Middle drag — move whole selection
+  sel.addEventListener('pointerdown',e=>{
+    if(e.target===$('thl')||e.target===$('thr'))return;
+    drag='M';startX=getN(e);startL=L;startR=R;
+    sel.setPointerCapture(e.pointerId);
+  });
+  sel.addEventListener('pointermove',mv,{passive:false});
+  sel.addEventListener('pointerup',()=>drag=null);
 }
 
 // CROP
 function getVR(){
-  const vw=$('vw'), v=$('vid');
-  const vdw=v.videoWidth||9, vdh=v.videoHeight||16;
-  const cw=vw.clientWidth, ch=vw.clientHeight;
+  const vw=$('vw'),v=$('vid');
+  const vdw=v.videoWidth||9,vdh=v.videoHeight||16;
+  const cw=vw.clientWidth,ch=vw.clientHeight;
   const sc=Math.min(cw/vdw,ch/vdh);
-  const dw=vdw*sc, dh=vdh*sc;
+  const dw=vdw*sc,dh=vdh*sc;
   return{left:(cw-dw)/2,top:(ch-dh)/2,w:dw,h:dh,vw:vdw,vh:vdh,sc};
 }
 
@@ -330,19 +329,17 @@ function initCrop(){
 }
 
 function renderCrop(){
-  const vw=$('vw');
-  const W=vw.clientWidth, H=vw.clientHeight;
-  const {x,y,w,h}=cr;
-  $('st').style.cssText=`top:0;left:0;right:0;height:${y}px`;
-  $('sb').style.cssText=`bottom:0;left:0;right:0;height:${H-y-h}px`;
-  $('sl').style.cssText=`top:${y}px;left:0;width:${x}px;height:${h}px`;
-  $('sr').style.cssText=`top:${y}px;right:0;width:${W-x-w}px;height:${h}px`;
+  const vw=$('vw'),W=vw.clientWidth,H=vw.clientHeight,{x,y,w,h}=cr;
+  $('cst').style.cssText=`top:0;left:0;right:0;height:${y}px`;
+  $('csb').style.cssText=`bottom:0;left:0;right:0;height:${H-y-h}px`;
+  $('csl').style.cssText=`top:${y}px;left:0;width:${x}px;height:${h}px`;
+  $('csr').style.cssText=`top:${y}px;right:0;width:${W-x-w}px;height:${h}px`;
   $('cf').style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
 }
 
 function bindCrop(){
-  const cf=$('cf'), vw=$('vw');
-  let drag=null, ds={};
+  const cf=$('cf'),vw=$('vw');
+  let drag=null,ds={};
   function gp(e){const s=e.touches?e.touches[0]:e;return{x:s.clientX,y:s.clientY}}
   cf.addEventListener('pointerdown',e=>{
     drag=e.target.dataset.c||'mv';
@@ -370,7 +367,6 @@ function bindCrop(){
   cf.addEventListener('pointerup',()=>drag=null);
 }
 
-// PROCESS
 async function proc(){
   noerr('e1');
   vR=getVR();
